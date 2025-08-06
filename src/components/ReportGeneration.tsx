@@ -14,6 +14,7 @@ import {
   Lightbulb,
   Shield
 } from 'lucide-react';
+import { useAssessmentStorage } from '@/hooks/useAssessmentStorage';
 
 interface ReportGenerationProps {
   assessmentData: Partial<AssessmentData>;
@@ -24,6 +25,8 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
   const [selectedReportType, setSelectedReportType] = useState<ReportType | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+  const [hasSaved, setHasSaved] = useState(false);
+  const { saveAssessmentToHistory } = useAssessmentStorage();
 
   // Análise de IA baseada nos dados do assessment
   const generateAnalysis = (): AnalysisResult => {
@@ -117,6 +120,10 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
     
     const analysis = generateAnalysis();
     setAnalysisResult(analysis);
+    if (!hasSaved) {
+      saveAssessmentToHistory();
+      setHasSaved(true);
+    }
     setIsGenerating(false);
   };
 
@@ -155,7 +162,7 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold mb-2 flex items-center justify-center">
               <Sparkles className="w-8 h-8 mr-3 text-accent" />
-              Mapa de Genialidade Gerado
+              Mapa de Genialidade de {assessmentData.personalInfo?.fullName || 'Perfil'}
             </h1>
             <p className="text-muted-foreground">
               Análise completa baseada em IA com insights personalizados

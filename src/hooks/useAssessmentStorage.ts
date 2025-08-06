@@ -1,7 +1,15 @@
 import { useState, useEffect } from 'react';
 import { AssessmentData } from '@/types/assessment';
 
+interface SavedAssessment {
+  id: number;
+  name: string;
+  date: string;
+  data: Partial<AssessmentData>;
+}
+
 const STORAGE_KEY = 'geniusMapAssessment';
+const HISTORY_KEY = 'geniusMapAnalyses';
 
 export const useAssessmentStorage = () => {
   const [assessmentData, setAssessmentData] = useState<Partial<AssessmentData>>({});
@@ -80,6 +88,27 @@ export const useAssessmentStorage = () => {
     return Math.round((completedSteps / 10) * 100);
   };
 
+  const getAssessmentsHistory = (): SavedAssessment[] => {
+    const history = localStorage.getItem(HISTORY_KEY);
+    return history ? JSON.parse(history) : [];
+  };
+
+  const saveAssessmentToHistory = () => {
+    if (!assessmentData.personalInfo?.fullName) return;
+    const history = getAssessmentsHistory();
+    history.push({
+      id: Date.now(),
+      name: assessmentData.personalInfo.fullName,
+      date: new Date().toISOString(),
+      data: assessmentData,
+    });
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  };
+
+  const startNewAssessment = () => {
+    clearAssessmentData();
+  };
+
   return {
     assessmentData,
     currentStep,
@@ -88,5 +117,8 @@ export const useAssessmentStorage = () => {
     clearAssessmentData,
     isStepComplete,
     getCompletionPercentage,
+    getAssessmentsHistory,
+    saveAssessmentToHistory,
+    startNewAssessment,
   };
 };

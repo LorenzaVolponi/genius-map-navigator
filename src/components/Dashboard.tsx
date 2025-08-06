@@ -12,14 +12,27 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ onStartAssessment, onViewReports }) => {
-  const { getCompletionPercentage, assessmentData } = useAssessmentStorage();
+  const {
+    getCompletionPercentage,
+    assessmentData,
+    getAssessmentsHistory,
+    startNewAssessment,
+  } = useAssessmentStorage();
   const completionPercentage = getCompletionPercentage();
   const hasStartedAssessment = completionPercentage > 0;
+  const completedAnalyses = getAssessmentsHistory().length;
+
+  const handleStart = () => {
+    if (hasStartedAssessment) {
+      startNewAssessment();
+    }
+    onStartAssessment();
+  };
 
   const statsCards = [
     {
       title: "Análises Completas",
-      value: hasStartedAssessment ? "1" : "0",
+      value: String(completedAnalyses),
       description: "Mapas de genialidade finalizados",
       icon: Brain,
       color: "text-primary"
@@ -53,11 +66,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartAssessment, onViewReports 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               size="lg"
-              onClick={onStartAssessment}
+              onClick={handleStart}
             >
               {hasStartedAssessment ? 'Continuar Análise' : 'Iniciar Nova Análise'}
             </Button>
-            {hasStartedAssessment && (
+            {(hasStartedAssessment || completedAnalyses > 0) && (
               <Button
                 variant="outline"
                 size="lg"
