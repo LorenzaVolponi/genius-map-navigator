@@ -16,6 +16,52 @@ import {
 } from 'lucide-react';
 import { useAssessmentStorage } from '@/hooks/useAssessmentStorage';
 
+// Utility: check recursively if a value is filled
+const hasValue = (value: unknown): boolean => {
+  if (Array.isArray(value)) {
+    return value.length > 0 && value.every(v => hasValue(v));
+  }
+  if (value && typeof value === 'object') {
+    return Object.values(value).every(v => hasValue(v));
+  }
+  return value !== undefined && value !== null && value !== '';
+};
+
+// Verify if all assessment sections and fields are completed
+const isAssessmentComplete = (data: Partial<AssessmentData>): data is AssessmentData => {
+  const sections: (keyof AssessmentData)[] = [
+    'personalInfo',
+    'behavioralProfile',
+    'talentsAndFlow',
+    'impactMarkers',
+    'limitsAndNonNegotiables',
+    'symbolicMap',
+    'unconsciousPatterns',
+    'strategicPositioning',
+    'idealConditions',
+    'finalSynthesis'
+  ];
+
+  return sections.every(section => {
+    const sectionData = data[section];
+    return sectionData && hasValue(sectionData);
+  });
+};
+
+// Compose AI prompt using all assessment data for precision
+const buildAnalysisPrompt = (data: AssessmentData, type: ReportType): string => {
+  const reportFocus: Record<ReportType, string> = {
+    executive: 'Produza um relatório executivo com seções de Zona de Genialidade, Posicionamento Estratégico e Próximos Passos.',
+    detailed: 'Produza um relatório detalhado com Análise Comportamental, Mapa Simbólico, Padrões Inconscientes e Recomendações.',
+    strategic: 'Produza um relatório estratégico com Roteiro de Carreira, Estratégias de Posicionamento e Plano de Desenvolvimento.'
+  };
+
+  return `Você é um analista sênior, filósofo contemporâneo e estrategista de legado.\n` +
+    `Utilize os dados fornecidos para gerar um diagnóstico profissional preciso.\n` +
+    `Dados do usuário:\n${JSON.stringify(data, null, 2)}\n` +
+    reportFocus[type];
+};
+
 interface ReportGenerationProps {
   assessmentData: Partial<AssessmentData>;
   onBack: () => void;
@@ -27,6 +73,7 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [hasSaved, setHasSaved] = useState(false);
   const { saveAssessmentToHistory } = useAssessmentStorage();
+  const assessmentComplete = isAssessmentComplete(assessmentData);
 
   // Análise de IA baseada nos dados do assessment
   const generateAnalysis = (): AnalysisResult => {
@@ -115,12 +162,18 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
   };
 
   const handleGenerateReport = async (reportType: ReportType) => {
+    if (!assessmentComplete) return;
+
     setSelectedReportType(reportType);
     setIsGenerating(true);
-    
+
+    // Build prompt for AI analysis
+    const prompt = buildAnalysisPrompt(assessmentData as AssessmentData, reportType);
+    console.log(prompt); // In real scenario, send this prompt to an AI service
+
     // Simular processamento de IA
     await new Promise(resolve => setTimeout(resolve, 3000));
-    
+
     const analysis = generateAnalysis();
     setAnalysisResult(analysis);
     if (!hasSaved) {
@@ -511,15 +564,21 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
           </p>
         </div>
 
+        {!assessmentComplete && (
+          <p className="text-center text-sm text-destructive mb-4">
+            Preencha todas as informações do assessment para gerar o diagnóstico.
+          </p>
+        )}
+
         {/* Tipos de Relatório */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {reportTypes.map((report) => {
             const Icon = report.icon;
             return (
-              <Card 
-                key={report.type} 
+              <Card
+                key={report.type}
                 className={`cursor-pointer transition-all duration-200 hover:shadow-lg bg-gradient-to-br ${report.color}`}
-                onClick={() => !isGenerating && handleGenerateReport(report.type)}
+                onClick={() => !isGenerating && assessmentComplete && handleGenerateReport(report.type)}
               >
                 <CardHeader>
                   <CardTitle className="flex items-center">
@@ -537,10 +596,10 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
                       </li>
                     ))}
                   </ul>
-                  
-                  <Button 
-                    className="w-full mt-4" 
-                    disabled={isGenerating}
+
+                  <Button
+                    className="w-full mt-4"
+                    disabled={isGenerating || !assessmentComplete}
                     variant={selectedReportType === report.type ? "default" : "outline"}
                   >
                     {isGenerating && selectedReportType === report.type ? (
