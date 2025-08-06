@@ -129,39 +129,67 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
         </div>
       </div>
 
-      <ArrayInput 
-        field="otherTests" 
-        label="Outros Testes Comportamentais" 
-        placeholder="Ex: CliftonStrengths, VIA Character" 
-      />
+      <div className="space-y-3">
+        <Label className="text-base font-medium">Outros Testes Comportamentais</Label>
+        <Textarea
+          value={behavioralProfile.otherTests.join('\n')}
+          onChange={(e) => updateField('otherTests', e.target.value.split('\n').filter(s => s.trim()))}
+          placeholder="Liste outros testes de personalidade que você fez. Ex: CliftonStrengths: Estratégico, Ideação; VIA Character: Criatividade, Prudência..."
+          rows={3}
+        />
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
-          <ArrayInput 
-            field="energizingSituations" 
-            label="Situações que Geram Energia" 
-            placeholder="Ex: Liderar equipes, resolver problemas complexos" 
-          />
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2">
+              <Label className="text-base font-medium">Situações que Geram Energia</Label>
+            </div>
+            <Textarea
+              value={behavioralProfile.energizingSituations.join('\n\n')}
+              onChange={(e) => updateField('energizingSituations', e.target.value.split('\n\n').filter(s => s.trim()))}
+              placeholder="Descreva as situações profissionais que te energizam e motivam. Ex: Liderar projetos de transformação, resolver problemas complexos, trabalhar com equipes diversas..."
+              rows={4}
+            />
+          </div>
           
-          <ArrayInput 
-            field="potentiatingEnvironments" 
-            label="Ambientes que Potencializam sua Entrega" 
-            placeholder="Ex: Startup dinâmica, home office silencioso" 
-          />
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2">
+              <Label className="text-base font-medium">Ambientes que Potencializam sua Entrega</Label>
+            </div>
+            <Textarea
+              value={behavioralProfile.potentiatingEnvironments.join('\n\n')}
+              onChange={(e) => updateField('potentiatingEnvironments', e.target.value.split('\n\n').filter(s => s.trim()))}
+              placeholder="Descreva os ambientes onde você se sente mais produtivo e criativo. Ex: Startup dinâmica com autonomia, home office silencioso com flexibilidade..."
+              rows={4}
+            />
+          </div>
         </div>
 
         <div className="space-y-4">
-          <ArrayInput 
-            field="drainingsituations" 
-            label="Situações que Drenam Energia" 
-            placeholder="Ex: Reuniões longas sem propósito, microgerenciamento" 
-          />
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2">
+              <Label className="text-base font-medium">Situações que Drenam Energia</Label>
+            </div>
+            <Textarea
+              value={behavioralProfile.drainingsituations.join('\n\n')}
+              onChange={(e) => updateField('drainingsituations', e.target.value.split('\n\n').filter(s => s.trim()))}
+              placeholder="Descreva as situações que te drenam e desmotivam. Ex: Reuniões longas sem propósito, microgerenciamento excessivo, ambientes competitivos destrutivos..."
+              rows={4}
+            />
+          </div>
           
-          <ArrayInput 
-            field="limitingEnvironments" 
-            label="Ambientes que Limitam sua Expressão" 
-            placeholder="Ex: Hierarquia rígida, open office barulhento" 
-          />
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2">
+              <Label className="text-base font-medium">Ambientes que Limitam sua Expressão</Label>
+            </div>
+            <Textarea
+              value={behavioralProfile.limitingEnvironments.join('\n\n')}
+              onChange={(e) => updateField('limitingEnvironments', e.target.value.split('\n\n').filter(s => s.trim()))}
+              placeholder="Descreva os ambientes onde você se sente limitado ou contraído. Ex: Hierarquia rígida sem autonomia, open office barulhento, culturas de controle excessivo..."
+              rows={4}
+            />
+          </div>
         </div>
       </div>
 

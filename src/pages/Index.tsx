@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import Dashboard from '@/components/Dashboard';
 import AssessmentForm from '@/components/AssessmentForm';
+import ReportGeneration from '@/components/ReportGeneration';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<'dashboard' | 'assessment' | 'reports'>('dashboard');
+  const [assessmentData, setAssessmentData] = useState<any>(null);
 
   const handleStartAssessment = () => {
     setCurrentView('assessment');
@@ -14,10 +16,20 @@ const Index = () => {
   };
 
   const handleViewReports = () => {
+    // Carregar dados do assessment do localStorage
+    const savedData = localStorage.getItem('geniusMapAssessment');
+    if (savedData) {
+      setAssessmentData(JSON.parse(savedData));
+    }
     setCurrentView('reports');
   };
 
   const handleAssessmentComplete = () => {
+    // Carregar dados do assessment do localStorage
+    const savedData = localStorage.getItem('geniusMapAssessment');
+    if (savedData) {
+      setAssessmentData(JSON.parse(savedData));
+    }
     setCurrentView('reports');
   };
 
@@ -38,18 +50,10 @@ const Index = () => {
       )}
       
       {currentView === 'reports' && (
-        <div className="min-h-screen bg-gradient-subtle flex items-center justify-center">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4">Relatórios em Desenvolvimento</h2>
-            <p className="text-muted-foreground mb-6">Sistema de geração de relatórios será implementado na próxima iteração</p>
-            <button 
-              onClick={handleBackToDashboard}
-              className="bg-primary text-primary-foreground px-6 py-2 rounded-md hover:bg-primary/90"
-            >
-              Voltar ao Dashboard
-            </button>
-          </div>
-        </div>
+        <ReportGeneration 
+          assessmentData={assessmentData || {}}
+          onBack={handleBackToDashboard}
+        />
       )}
     </div>
   );

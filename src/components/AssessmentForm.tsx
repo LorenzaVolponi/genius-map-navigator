@@ -62,6 +62,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onBack, onComplete }) =
     if (currentStep < steps.length) {
       updateCurrentStep(currentStep + 1);
     } else {
+      // Ir para geração de relatórios
       onComplete();
     }
   };

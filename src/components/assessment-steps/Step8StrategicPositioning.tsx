@@ -223,21 +223,41 @@ const Step8StrategicPositioning: React.FC<Step8StrategicPositioningProps> = ({ d
         </div>
       </div>
 
-      <CustomArrayInput 
-        field="acceptableProjects" 
-        label="4. Três projetos que aceitaria imediatamente"
-        placeholder="Ex: Liderar a estratégia de IA de uma startup de impacto social... Criar um programa de educação em IA para comunidades underserved... Desenvolver protocolos éticos para uso de IA em saúde mental..."
-        description="Descreva projetos específicos que te animariam a começar amanhã"
-        icon={TrendingUp}
-      />
+      <div className="space-y-3">
+        <div className="flex items-center space-x-2">
+          <TrendingUp className="w-5 h-5 text-primary" />
+          <Label className="text-base font-medium">4. Três projetos que aceitaria imediatamente</Label>
+        </div>
+        <p className="text-sm text-muted-foreground ml-7">Descreva projetos específicos que te animariam a começar amanhã</p>
+        
+        <div className="ml-7">
+          <Textarea
+            value={strategicPositioning.acceptableProjects.join('\n\n')}
+            onChange={(e) => updateField('acceptableProjects', e.target.value.split('\n\n').filter(s => s.trim()))}
+            placeholder="Ex: Liderar a estratégia de IA de uma startup de impacto social... Criar um programa de educação em IA para comunidades underserved... Desenvolver protocolos éticos para uso de IA em saúde mental..."
+            rows={5}
+            className="bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/10"
+          />
+        </div>
+      </div>
 
-      <CustomArrayInput 
-        field="rejectedProjects" 
-        label="5. Três tipos de projetos que recusaria com convicção"
-        placeholder="Ex: Implementação de IA para vigilância sem transparência... Projetos que priorizam lucro sobre impacto social... Desenvolvimento de IA para manipulação de comportamento do consumidor..."
-        description="Projetos que vão contra seus valores ou não se alinham com seu propósito"
-        icon={X}
-      />
+      <div className="space-y-3">
+        <div className="flex items-center space-x-2">
+          <X className="w-5 h-5 text-destructive" />
+          <Label className="text-base font-medium">5. Três tipos de projetos que recusaria com convicção</Label>
+        </div>
+        <p className="text-sm text-muted-foreground ml-7">Projetos que vão contra seus valores ou não se alinham com seu propósito</p>
+        
+        <div className="ml-7">
+          <Textarea
+            value={strategicPositioning.rejectedProjects.join('\n\n')}
+            onChange={(e) => updateField('rejectedProjects', e.target.value.split('\n\n').filter(s => s.trim()))}
+            placeholder="Ex: Implementação de IA para vigilância sem transparência... Projetos que priorizam lucro sobre impacto social... Desenvolvimento de IA para manipulação de comportamento do consumidor..."
+            rows={5}
+            className="bg-gradient-to-r from-destructive/5 to-warning/5 border-destructive/10"
+          />
+        </div>
+      </div>
 
       <div className="bg-gradient-to-r from-primary/5 to-secondary/5 p-6 rounded-lg border border-primary/20">
         <h4 className="font-medium mb-3 text-primary flex items-center">
