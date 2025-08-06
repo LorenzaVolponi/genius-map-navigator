@@ -39,9 +39,9 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
       <Label>{label}</Label>
       <Textarea
         value={(personalInfo[field] as string[]).join('\n')}
-        onChange={(e) => updateField(field, e.target.value.split('\n').filter(s => s.trim()))}
+        onChange={(e) => updateField(field, e.target.value.split('\n'))}
         placeholder={placeholder}
-        rows={3}
+        rows={4}
       />
     </div>
   );

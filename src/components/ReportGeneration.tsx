@@ -19,7 +19,7 @@ import { useAssessmentStorage } from '@/hooks/useAssessmentStorage';
 // Utility: check recursively if a value is filled
 const hasValue = (value: unknown): boolean => {
   if (Array.isArray(value)) {
-    return value.length > 0 && value.every(v => hasValue(v));
+    return value.some(v => hasValue(v));
   }
   if (value && typeof value === 'object') {
     return Object.values(value).every(v => hasValue(v));
