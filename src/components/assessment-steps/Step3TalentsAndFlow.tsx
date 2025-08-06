@@ -34,8 +34,8 @@ const Step3TalentsAndFlow: React.FC<Step3TalentsAndFlowProps> = ({ data, onDataC
         <Label className="text-base font-medium">1. Três momentos em que experimentou flow absoluto na carreira ou vida</Label>
         <p className="text-xs text-muted-foreground">Flow é o estado de total imersão e satisfação em uma atividade</p>
         <Textarea
-          value={talentsAndFlow.flowMoments.join('\n\n')}
-          onChange={(e) => updateField('flowMoments', e.target.value.split('\n\n').filter(s => s.trim()))}
+          value={talentsAndFlow.flowMoments.join('\n')}
+          onChange={(e) => updateField('flowMoments', e.target.value.split('\n').filter(s => s.trim()))}
           placeholder="Descreva situações específicas onde perdeu a noção do tempo, se sentiu completamente absorvido e teve alta performance..."
           rows={6}
         />
@@ -44,8 +44,8 @@ const Step3TalentsAndFlow: React.FC<Step3TalentsAndFlowProps> = ({ data, onDataC
       <div className="space-y-3">
         <Label className="text-base font-medium">2. Desafios que você ama resolver (mesmo quando evitados por outros)</Label>
         <Textarea
-          value={talentsAndFlow.challengesYouLove.join('\n\n')}
-          onChange={(e) => updateField('challengesYouLove', e.target.value.split('\n\n').filter(s => s.trim()))}
+          value={talentsAndFlow.challengesYouLove.join('\n')}
+          onChange={(e) => updateField('challengesYouLove', e.target.value.split('\n').filter(s => s.trim()))}
           placeholder="Ex: Transformar equipes desmotivadas, criar soluções para problemas complexos, mediar conflitos..."
           rows={4}
         />
@@ -54,8 +54,8 @@ const Step3TalentsAndFlow: React.FC<Step3TalentsAndFlowProps> = ({ data, onDataC
       <div className="space-y-3">
         <Label className="text-base font-medium">3. Tipo de elogio recorrente que recebe em sua potência máxima</Label>
         <Textarea
-          value={talentsAndFlow.recurringCompliments.join('\n\n')}
-          onChange={(e) => updateField('recurringCompliments', e.target.value.split('\n\n').filter(s => s.trim()))}
+          value={talentsAndFlow.recurringCompliments.join('\n')}
+          onChange={(e) => updateField('recurringCompliments', e.target.value.split('\n').filter(s => s.trim()))}
           placeholder="Ex: 'Você sempre vê soluções onde outros veem problemas', 'Sua capacidade de simplificar o complexo é incrível'..."
           rows={4}
         />
@@ -86,8 +86,8 @@ const Step3TalentsAndFlow: React.FC<Step3TalentsAndFlowProps> = ({ data, onDataC
       <div className="space-y-3">
         <Label className="text-base font-medium">6. Três momentos em que fez 'milagre acontecer' com poucos recursos</Label>
         <Textarea
-          value={talentsAndFlow.miracleMoments.join('\n\n')}
-          onChange={(e) => updateField('miracleMoments', e.target.value.split('\n\n').filter(s => s.trim()))}
+          value={talentsAndFlow.miracleMoments.join('\n')}
+          onChange={(e) => updateField('miracleMoments', e.target.value.split('\n').filter(s => s.trim()))}
           placeholder="Situações onde conseguiu resultados extraordinários mesmo com limitações de tempo, budget ou recursos..."
           rows={5}
         />
@@ -96,8 +96,8 @@ const Step3TalentsAndFlow: React.FC<Step3TalentsAndFlowProps> = ({ data, onDataC
       <div className="space-y-3">
         <Label className="text-base font-medium">7. Atividades que te animam mesmo quando está cansado(a)</Label>
         <Textarea
-          value={talentsAndFlow.energizingActivities.join('\n\n')}
-          onChange={(e) => updateField('energizingActivities', e.target.value.split('\n\n').filter(s => s.trim()))}
+          value={talentsAndFlow.energizingActivities.join('\n')}
+          onChange={(e) => updateField('energizingActivities', e.target.value.split('\n').filter(s => s.trim()))}
           placeholder="Ex: Brainstormings criativos, mentoria de pessoas, análise de dados, apresentações..."
           rows={4}
         />

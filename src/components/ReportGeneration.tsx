@@ -3,12 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AssessmentData, AnalysisResult, ReportType } from '@/types/assessment';
-import { 
-  FileText, 
-  Download, 
-  Sparkles, 
-  Target, 
-  BookOpen, 
+import {
+  FileText,
+  Download,
+  Sparkles,
+  Target,
+  BookOpen,
   TrendingUp,
   Brain,
   Lightbulb,
@@ -48,6 +48,8 @@ const isAssessmentComplete = (data: Partial<AssessmentData>): data is Assessment
   });
 };
 
+const UNIVERSAL_PROMPT = `🔷 PROMPT UNIVERSAL PARA DIAGNÓSTICO PROFUNDO DA ZONA DE GENIALIDADE\n\nInstrução: Desenvolva um diagnóstico sistêmico, altamente completo e integrado da Zona de Genialidade Profissional de uma pessoa, considerando as múltiplas camadas de identidade, comportamento, energia, vocação e propósito. A análise deve ser simbólica, estratégica e aplicada, cruzando dados comportamentais, espirituais, biográficos e profissionais com alta precisão. Evite qualquer tipo de delírio ou exagero místico — tudo deve ter aplicabilidade prática, simbologia lúcida e conexão com o mercado atual.\n\n🎯 Objetivo da análise:\nGerar clareza total sobre o ponto de maior potência, verdade e impacto de uma pessoa no mundo — para que ela atue com fluidez, seja bem remunerada, evite exaustão e realize sua missão com lucidez.\n\n📌 Estrutura esperada do resultado:\n\nIDENTIDADE PROFUNDA\nNome completo\nData de nascimento\nLocal de atuação (Brasil/global)\nIdiomas fluentes\nFormações acadêmicas\nCargos e atuações anteriores\nDesejos de atuação atual (áreas, moedas, modelo de contrato, formatos)\nDiagnóstico de trajetória (linha do tempo, marcos de virada, conquistas)\n\nPERFIL COMPORTAMENTAL INTEGRADO\nMBTI com análise aprofundada dos traços dominantes e desafios\nDISC com leitura dos eixos primários e ambiente ideal\nEneagrama com asas, subtipos e padrões de atuação\nIntersecção entre as três tipologias: como se combinam? onde convergem?\nAmbientes que alimentam sua energia\nAmbientes que drenam e te desestabilizam\nEstilo de liderança, expressão e influência\n\nZONA DE GENIALIDADE REAL\nDiagnóstico do seu talento singular: o que só você entrega daquele jeito\nFronteiras energéticas (o que é mínimo, o que é máximo, onde é tóxico)\nTipos de desafio onde você performa com naturalidade\nQuando está em flow: como age, o que produz, que impacto gera\nComo traduz complexidade em solução\nEstilo de criação (frameworks, modelos, ecossistemas, estratégias)\nTradução simbólica e estratégica da sua contribuição única no mundo\n\nCOMPONENTE SIMBÓLICO E ESPIRITUAL\nNumerologia: Caminho de vida, número da alma, número do destino\nAstrologia funcional: Sol, Lua, Ascendente (com arquétipo aplicado)\nCiclo existencial atual: colheita, transição, fertilidade ou encerramento\nMissão simbólica: verbos de alma, arquétipos dominantes\nPadrões de atração energética (lideranças, desafios, clientes)\nPadrões cármicos a serem transmutados (comportamentos, crenças, vícios de vínculo)\nRituais ou condições que restauram sua potência\n\nPOSICIONAMENTO ESTRATÉGICO NO MERCADO\nÁreas onde sua genialidade é mais necessária hoje\nCargos e papéis possíveis no atual mercado (ênfase em IA, inovação, capital, educação)\nTipos de empresa ou organização que melhor se beneficiam de você\nO que você precisa receber para entregar o seu melhor (modelo, contrato, valores)\nCondições ideais de atuação: autonomia, ética, confiança, encontros simbólicos\nTipos de cliente, líder ou equipe que ativam sua potência (e os que te drenam)\n\nRISCOS E ALERTAS\nO que causa burnout\nOnde você se sabota (padrões repetitivos)\nTendências inconscientes a serem curadas\nCiclos que você precisa fechar ou não repetir\nLimites que não podem mais ser cruzados\nComo você some de si mesma — e como se reconecta\n\nPROJEÇÃO FUTURA — OS PRÓXIMOS 6 MESES\nSe começar hoje, o que pode alcançar até [data + 6 meses]\nEstratégia: foco, canais, produtos, relações\nSequência de movimento: o que vem primeiro?\nOnde e como captar valor com menos esforço\nO que deve dizer não com firmeza para abrir espaço\nComo alinhar remuneração em moeda forte, propósito e ritmo\n\nSÍNTESE FINAL\nZona de genialidade em uma frase\nPalavra-chave da sua missão\nPalavra-chave da sua sombra\nPrática de regeneração simbólica\nLembrete essencial em momentos de desânimo\nQual é o maior risco? Qual é o maior dom?\n\n📌 Especificação Técnica:\nO texto deve ser estruturado com subtítulos, linguagem direta porém sensível, metáforas sóbrias quando necessário, e 100% aplicável. Deve traduzir o mais alto nível de inteligência humana, espiritual e estratégica possível. Evitar astrologia genérica. Personalizar a leitura de cada dado. Analisar com base em contexto de vida e impacto.\n\n🟢 Use o tom de um analista sênior + filósofo contemporâneo + estrategista de legado.\n🛑 Nunca delire ou espiritualize o que não se sustenta na realidade.\n✅ Combine análise simbólica com clareza de mercado.`;
+
 // Compose AI prompt using all assessment data for precision
 const buildAnalysisPrompt = (data: AssessmentData, type: ReportType): string => {
   const reportFocus: Record<ReportType, string> = {
@@ -56,10 +58,7 @@ const buildAnalysisPrompt = (data: AssessmentData, type: ReportType): string => 
     strategic: 'Produza um relatório estratégico com Roteiro de Carreira, Estratégias de Posicionamento e Plano de Desenvolvimento.'
   };
 
-  return `Você é um analista sênior, filósofo contemporâneo e estrategista de legado.\n` +
-    `Utilize os dados fornecidos para gerar um diagnóstico profissional preciso.\n` +
-    `Dados do usuário:\n${JSON.stringify(data, null, 2)}\n` +
-    reportFocus[type];
+  return `${UNIVERSAL_PROMPT}\n\nDados do usuário:\n${JSON.stringify(data, null, 2)}\n\n${reportFocus[type]}`;
 };
 
 interface ReportGenerationProps {
@@ -99,7 +98,7 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
         ...(behavioralProfile?.energizingSituations?.slice(0, 2) || [])
       ].filter(Boolean),
       opportunities: [
-        ...(strategicPositioning?.areasOfInterest?.slice(0, 3) || []),
+        strategicPositioning?.areasOfInterest,
         ...(strategicPositioning?.acceptableProjects?.slice(0, 2) || [])
       ].filter(Boolean)
     };
@@ -108,7 +107,7 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
     const recommendations = {
       immediate: [
         `Aproveitar sua principal força: ${finalSynthesis?.greatestGift}`,
-        `Focar em ${strategicPositioning?.preferredRole?.[0] || 'papel estratégico'}`,
+        `Focar em ${strategicPositioning?.preferredRole || 'papel estratégico'}`,
         `Priorizar projetos que atendam: ${finalSynthesis?.mainProfessionalNeed}`
       ].filter(Boolean),
       strategic: [
@@ -125,7 +124,7 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
 
     // Perfil ideal baseado nas preferências
     const idealProfile = {
-      role: strategicPositioning?.preferredRole?.[0] || "Estrategista de Transformação",
+      role: strategicPositioning?.preferredRole || "Estrategista de Transformação",
       environment: behavioralProfile?.potentiatingEnvironments?.[0] || "Ambiente colaborativo e autônomo",
       conditions: [
         ...(limitsAndNonNegotiables?.minimumConditions?.slice(0, 3) || []),
@@ -144,7 +143,7 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
     const nextSteps = [
       `Buscar oportunidades que realizem: ${finalSynthesis?.desiredVersion}`,
       `Aplicar seus talentos em: ${strategicPositioning?.meaningfulWork}`,
-      `Desenvolver networking em: ${strategicPositioning?.areasOfInterest?.[0]}`,
+      `Desenvolver networking em: ${strategicPositioning?.areasOfInterest}`,
       `Implementar práticas que fortaleçam: ${unconsciousPatterns?.spiritualPractices?.[0]}`,
       `Criar estratégia para superar: ${unconsciousPatterns?.patternsToHeal?.[0]}`
     ].filter(Boolean);

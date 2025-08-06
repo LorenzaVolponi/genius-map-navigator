@@ -71,8 +71,8 @@ const Step5LimitsAndNonNegotiables: React.FC<Step5LimitsAndNonNegotiablesProps> 
 
         <div className="ml-7">
           <Textarea
-            value={(limitsAndNonNegotiables[field] as string[]).join('\n\n')}
-            onChange={(e) => updateField(field, e.target.value.split('\n\n').filter(s => s.trim()))}
+            value={(limitsAndNonNegotiables[field] as string[]).join('\n')}
+            onChange={(e) => updateField(field, e.target.value.split('\n').filter(s => s.trim()))}
             placeholder={placeholder}
             rows={4}
             className={`bg-gradient-to-r rounded-lg border ${getVariantStyles()}`}

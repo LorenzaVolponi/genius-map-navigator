@@ -70,8 +70,8 @@ const Step7UnconsciousPatterns: React.FC<Step7UnconsciousPatternsProps> = ({ dat
 
         <div className="ml-7">
           <Textarea
-            value={(unconsciousPatterns[field] as string[]).join('\n\n')}
-            onChange={(e) => updateField(field, e.target.value.split('\n\n').filter(s => s.trim()))}
+            value={(unconsciousPatterns[field] as string[]).join('\n')}
+            onChange={(e) => updateField(field, e.target.value.split('\n').filter(s => s.trim()))}
             placeholder={placeholder}
             rows={4}
             className={`bg-gradient-to-r rounded-lg border ${getVariantStyles()}`}

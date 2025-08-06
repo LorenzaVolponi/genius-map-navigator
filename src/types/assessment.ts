@@ -76,8 +76,8 @@ export interface UnconsciousPatterns {
 }
 
 export interface StrategicPositioning {
-  areasOfInterest: string[];
-  preferredRole: string[];
+  areasOfInterest: string;
+  preferredRole: string;
   meaningfulWork: string;
   acceptableProjects: string[];
   rejectedProjects: string[];

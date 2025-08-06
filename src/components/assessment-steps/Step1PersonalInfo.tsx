@@ -38,8 +38,8 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     <div className="space-y-2">
       <Label>{label}</Label>
       <Textarea
-        value={(personalInfo[field] as string[]).join('\n\n')}
-        onChange={(e) => updateField(field, e.target.value.split('\n\n').filter(s => s.trim()))}
+        value={(personalInfo[field] as string[]).join('\n')}
+        onChange={(e) => updateField(field, e.target.value.split('\n').filter(s => s.trim()))}
         placeholder={placeholder}
         rows={3}
       />

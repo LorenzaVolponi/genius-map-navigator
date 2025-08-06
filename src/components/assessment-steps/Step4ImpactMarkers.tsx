@@ -45,8 +45,8 @@ const Step4ImpactMarkers: React.FC<Step4ImpactMarkersProps> = ({ data, onDataCha
 
       <div className="ml-7">
         <Textarea
-          value={(impactMarkers[field] as string[]).join('\n\n')}
-          onChange={(e) => updateField(field, e.target.value.split('\n\n').filter(s => s.trim()))}
+          value={(impactMarkers[field] as string[]).join('\n')}
+          onChange={(e) => updateField(field, e.target.value.split('\n').filter(s => s.trim()))}
           placeholder={placeholder}
           rows={4}
         />

@@ -87,8 +87,8 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
               <Label className="text-base font-medium">Situações que Geram Energia</Label>
             </div>
             <Textarea
-              value={behavioralProfile.energizingSituations.join('\n\n')}
-              onChange={(e) => updateField('energizingSituations', e.target.value.split('\n\n').filter(s => s.trim()))}
+              value={behavioralProfile.energizingSituations.join('\n')}
+              onChange={(e) => updateField('energizingSituations', e.target.value.split('\n').filter(s => s.trim()))}
               placeholder="Descreva as situações profissionais que te energizam e motivam. Ex: Liderar projetos de transformação, resolver problemas complexos, trabalhar com equipes diversas..."
               rows={4}
             />
@@ -99,8 +99,8 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
               <Label className="text-base font-medium">Ambientes que Potencializam sua Entrega</Label>
             </div>
             <Textarea
-              value={behavioralProfile.potentiatingEnvironments.join('\n\n')}
-              onChange={(e) => updateField('potentiatingEnvironments', e.target.value.split('\n\n').filter(s => s.trim()))}
+              value={behavioralProfile.potentiatingEnvironments.join('\n')}
+              onChange={(e) => updateField('potentiatingEnvironments', e.target.value.split('\n').filter(s => s.trim()))}
               placeholder="Descreva os ambientes onde você se sente mais produtivo e criativo. Ex: Startup dinâmica com autonomia, home office silencioso com flexibilidade..."
               rows={4}
             />
@@ -113,8 +113,8 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
               <Label className="text-base font-medium">Situações que Drenam Energia</Label>
             </div>
             <Textarea
-              value={behavioralProfile.drainingsituations.join('\n\n')}
-              onChange={(e) => updateField('drainingsituations', e.target.value.split('\n\n').filter(s => s.trim()))}
+              value={behavioralProfile.drainingsituations.join('\n')}
+              onChange={(e) => updateField('drainingsituations', e.target.value.split('\n').filter(s => s.trim()))}
               placeholder="Descreva as situações que te drenam e desmotivam. Ex: Reuniões longas sem propósito, microgerenciamento excessivo, ambientes competitivos destrutivos..."
               rows={4}
             />
@@ -125,8 +125,8 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
               <Label className="text-base font-medium">Ambientes que Limitam sua Expressão</Label>
             </div>
             <Textarea
-              value={behavioralProfile.limitingEnvironments.join('\n\n')}
-              onChange={(e) => updateField('limitingEnvironments', e.target.value.split('\n\n').filter(s => s.trim()))}
+              value={behavioralProfile.limitingEnvironments.join('\n')}
+              onChange={(e) => updateField('limitingEnvironments', e.target.value.split('\n').filter(s => s.trim()))}
               placeholder="Descreva os ambientes onde você se sente limitado ou contraído. Ex: Hierarquia rígida sem autonomia, open office barulhento, culturas de controle excessivo..."
               rows={4}
             />

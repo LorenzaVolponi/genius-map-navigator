@@ -12,8 +12,8 @@ interface Step8StrategicPositioningProps {
 
 const Step8StrategicPositioning: React.FC<Step8StrategicPositioningProps> = ({ data, onDataChange }) => {
   const strategicPositioning = data.strategicPositioning || {
-    areasOfInterest: [],
-    preferredRole: [],
+    areasOfInterest: '',
+    preferredRole: '',
     meaningfulWork: '',
     acceptableProjects: [],
     rejectedProjects: []
@@ -47,8 +47,8 @@ const Step8StrategicPositioning: React.FC<Step8StrategicPositioningProps> = ({ d
 
         <div className="ml-7">
           <Textarea
-            value={strategicPositioning.areasOfInterest.join('\n')}
-            onChange={(e) => updateField('areasOfInterest', e.target.value.split('\n').filter(s => s.trim()))}
+            value={strategicPositioning.areasOfInterest}
+            onChange={(e) => updateField('areasOfInterest', e.target.value)}
             placeholder="Ex: Ética e governança de IA... Automação inteligente de processos..."
             rows={5}
           />
@@ -69,8 +69,8 @@ const Step8StrategicPositioning: React.FC<Step8StrategicPositioningProps> = ({ d
 
         <div className="ml-7">
           <Textarea
-            value={strategicPositioning.preferredRole.join('\n')}
-            onChange={(e) => updateField('preferredRole', e.target.value.split('\n').filter(s => s.trim()))}
+            value={strategicPositioning.preferredRole}
+            onChange={(e) => updateField('preferredRole', e.target.value)}
             placeholder="Ex: Estrategista, consultora fractional, facilitadora de transformação..."
             rows={4}
           />
