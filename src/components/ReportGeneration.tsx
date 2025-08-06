@@ -2,17 +2,19 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AssessmentData, AnalysisResult, ReportType } from '@/types/assessment';
-import { 
-  FileText, 
-  Download, 
-  Sparkles, 
-  Target, 
-  BookOpen, 
+import {
+  FileText,
+  Download,
+  Sparkles,
+  Target,
+  BookOpen,
   TrendingUp,
   Brain,
   Lightbulb,
-  Shield
+  Shield,
+  AlertCircle
 } from 'lucide-react';
 
 interface ReportGenerationProps {
@@ -24,6 +26,7 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
   const [selectedReportType, setSelectedReportType] = useState<ReportType | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   // Análise de IA baseada nos dados do assessment
   const generateAnalysis = (): AnalysisResult => {
@@ -111,13 +114,23 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
   const handleGenerateReport = async (reportType: ReportType) => {
     setSelectedReportType(reportType);
     setIsGenerating(true);
-    
-    // Simular processamento de IA
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    const analysis = generateAnalysis();
-    setAnalysisResult(analysis);
-    setIsGenerating(false);
+    setError(null);
+    try {
+      const response = await fetch('/api/generate-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ assessmentData, reportType })
+      });
+      if (!response.ok) {
+        throw new Error('Failed to generate report');
+      }
+      const analysis: AnalysisResult = await response.json();
+      setAnalysisResult(analysis);
+    } catch {
+      setError('Não foi possível gerar o relatório. Tente novamente.');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const reportTypes = [
@@ -336,6 +349,22 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
             Escolha o tipo de relatório que melhor atende suas necessidades
           </p>
         </div>
+
+        {error && (
+          <Alert variant="destructive" className="mb-8">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Erro ao gerar relatório</AlertTitle>
+            <AlertDescription className="flex flex-col space-y-4">
+              <span>{error}</span>
+              <Button
+                onClick={() => selectedReportType && handleGenerateReport(selectedReportType)}
+                disabled={isGenerating}
+              >
+                Tentar novamente
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Tipos de Relatório */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
