@@ -25,7 +25,7 @@ export interface BehavioralProfile {
   enneagram: string;
   otherTests: string[];
   energizingSituations: string[];
-  drainingsituations: string[];
+  drainingSituations: string[];
   potentiatingEnvironments: string[];
   limitingEnvironments: string[];
 }

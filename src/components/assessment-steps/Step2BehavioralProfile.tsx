@@ -19,12 +19,15 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
     enneagram: '',
     otherTests: [],
     energizingSituations: [],
-    drainingsituations: [],
+    drainingSituations: [],
     potentiatingEnvironments: [],
     limitingEnvironments: []
   };
 
-  const updateField = (field: keyof BehavioralProfile, value: any) => {
+  const updateField = <K extends keyof BehavioralProfile>(
+    field: K,
+    value: BehavioralProfile[K]
+  ) => {
     const updatedProfile = { ...behavioralProfile, [field]: value };
     onDataChange({ behavioralProfile: updatedProfile });
   };
@@ -172,8 +175,8 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
               <Label className="text-base font-medium">Situações que Drenam Energia</Label>
             </div>
             <Textarea
-              value={behavioralProfile.drainingsituations.join('\n\n')}
-              onChange={(e) => updateField('drainingsituations', e.target.value.split('\n\n').filter(s => s.trim()))}
+              value={behavioralProfile.drainingSituations.join('\n\n')}
+              onChange={(e) => updateField('drainingSituations', e.target.value.split('\n\n').filter(s => s.trim()))}
               placeholder="Descreva as situações que te drenam e desmotivam. Ex: Reuniões longas sem propósito, microgerenciamento excessivo, ambientes competitivos destrutivos..."
               rows={4}
             />
