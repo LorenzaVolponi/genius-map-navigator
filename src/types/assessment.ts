@@ -64,8 +64,6 @@ export interface SymbolicMap {
   soulNumber: number;
   destinyNumber: number;
   sunSign: string;
-  moonSign: string;
-  ascendant: string;
   currentLifeCycle: string;
 }
 
