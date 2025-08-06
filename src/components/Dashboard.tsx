@@ -3,18 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Brain, 
-  Plus, 
-  FileText, 
-  Users, 
-  Target, 
-  Zap,
-  TrendingUp,
-  Calendar
-} from 'lucide-react';
+import { Brain, FileText, Target, Zap, TrendingUp, Calendar } from 'lucide-react';
 import { useAssessmentStorage } from '@/hooks/useAssessmentStorage';
-import heroImage from '@/assets/hero-brain.jpg';
 
 interface DashboardProps {
   onStartAssessment: () => void;
@@ -51,50 +41,35 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartAssessment, onViewReports 
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center opacity-10"
-          style={{ backgroundImage: `url(${heroImage})` }}
-        />
-        <div className="relative bg-gradient-hero/90 text-white">
-          <div className="container mx-auto px-6 py-16">
-            <div className="max-w-4xl mx-auto text-center">
-              <div className="flex items-center justify-center mb-6">
-                <Brain className="w-16 h-16 mr-4" />
-                <h1 className="text-5xl font-bold">Mapa de Genialidade</h1>
-              </div>
-              <p className="text-xl mb-8 text-white/90">
-                Descubra sua zona de genialidade profissional através de análise integral 
-                que combina tipologias comportamentais, numerologia, astrologia e histórico de carreira
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button 
-                  variant="accent" 
-                  size="xl" 
-                  onClick={onStartAssessment}
-                  className="shadow-glow"
-                >
-                  <Plus className="w-5 h-5 mr-2" />
-                  {hasStartedAssessment ? 'Continuar Análise' : 'Iniciar Nova Análise'}
-                </Button>
-                {hasStartedAssessment && (
-                  <Button 
-                    variant="outline" 
-                    size="xl"
-                    onClick={onViewReports}
-                    className="border-white/30 text-white hover:bg-white/10"
-                  >
-                    <FileText className="w-5 h-5 mr-2" />
-                    Ver Relatórios
-                  </Button>
-                )}
-              </div>
-            </div>
+    <div className="min-h-screen bg-background">
+      <header className="border-b">
+        <div className="container mx-auto px-6 py-10 text-center flex flex-col items-center gap-4">
+          <Brain className="w-12 h-12 text-primary" />
+          <h1 className="text-3xl font-bold">Mapa de Genialidade</h1>
+          <p className="text-muted-foreground max-w-2xl">
+            Descubra sua zona de genialidade profissional através de análise integral que combina
+            tipologias comportamentais, numerologia, astrologia e histórico de carreira
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              size="lg"
+              onClick={onStartAssessment}
+            >
+              {hasStartedAssessment ? 'Continuar Análise' : 'Iniciar Nova Análise'}
+            </Button>
+            {hasStartedAssessment && (
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={onViewReports}
+              >
+                <FileText className="w-5 h-5 mr-2" />
+                Ver Relatórios
+              </Button>
+            )}
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Stats Section */}
       <div className="container mx-auto px-6 py-12">

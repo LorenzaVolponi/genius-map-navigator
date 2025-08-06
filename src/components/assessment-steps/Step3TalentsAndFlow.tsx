@@ -1,11 +1,7 @@
 import React from 'react';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { X, Plus } from 'lucide-react';
 import { TalentsAndFlow } from '@/types/assessment';
 
 interface Step3TalentsAndFlowProps {
@@ -26,74 +22,11 @@ const Step3TalentsAndFlow: React.FC<Step3TalentsAndFlowProps> = ({ data, onDataC
     preferredAction: 'create'
   };
 
-  const updateField = (field: keyof TalentsAndFlow, value: any) => {
+  const updateField = (field: keyof TalentsAndFlow, value: unknown) => {
     const updatedFlow = { ...talentsAndFlow, [field]: value };
     onDataChange({ talentsAndFlow: updatedFlow });
   };
 
-  const addToArray = (field: keyof TalentsAndFlow, value: string) => {
-    if (value.trim()) {
-      const currentArray = (talentsAndFlow[field] as string[]) || [];
-      const updatedArray = [...currentArray, value.trim()];
-      updateField(field, updatedArray);
-    }
-  };
-
-  const removeFromArray = (field: keyof TalentsAndFlow, index: number) => {
-    const currentArray = (talentsAndFlow[field] as string[]) || [];
-    const updatedArray = currentArray.filter((_, i) => i !== index);
-    updateField(field, updatedArray);
-  };
-
-  const ArrayInput = ({ field, label, placeholder, description }: { 
-    field: keyof TalentsAndFlow, 
-    label: string, 
-    placeholder: string,
-    description?: string 
-  }) => {
-    const [inputValue, setInputValue] = React.useState('');
-    const currentArray = (talentsAndFlow[field] as string[]) || [];
-
-    const handleAdd = () => {
-      addToArray(field, inputValue);
-      setInputValue('');
-    };
-
-    return (
-      <div className="space-y-2">
-        <Label>{label}</Label>
-        {description && <p className="text-xs text-muted-foreground">{description}</p>}
-        <div className="flex space-x-2">
-          <Textarea
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder={placeholder}
-            rows={2}
-            className="flex-1"
-          />
-          <Button type="button" onClick={handleAdd} size="sm" className="self-start">
-            <Plus className="w-4 h-4" />
-          </Button>
-        </div>
-        <div className="space-y-2">
-          {currentArray.map((item, index) => (
-            <div key={index} className="flex items-start space-x-2 p-3 bg-muted/50 rounded-lg">
-              <span className="flex-1 text-sm">{item}</span>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => removeFromArray(field, index)}
-                className="h-auto p-1"
-              >
-                <X className="w-3 h-3" />
-              </Button>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div className="space-y-6">

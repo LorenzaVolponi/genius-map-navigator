@@ -2,9 +2,6 @@ import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { X, Plus } from 'lucide-react';
 import { BehavioralProfile } from '@/types/assessment';
 
 interface Step2BehavioralProfileProps {
@@ -24,67 +21,11 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
     limitingEnvironments: []
   };
 
-  const updateField = (field: keyof BehavioralProfile, value: any) => {
+  const updateField = (field: keyof BehavioralProfile, value: unknown) => {
     const updatedProfile = { ...behavioralProfile, [field]: value };
     onDataChange({ behavioralProfile: updatedProfile });
   };
 
-  const addToArray = (field: keyof BehavioralProfile, value: string) => {
-    if (value.trim()) {
-      const currentArray = (behavioralProfile[field] as string[]) || [];
-      const updatedArray = [...currentArray, value.trim()];
-      updateField(field, updatedArray);
-    }
-  };
-
-  const removeFromArray = (field: keyof BehavioralProfile, index: number) => {
-    const currentArray = (behavioralProfile[field] as string[]) || [];
-    const updatedArray = currentArray.filter((_, i) => i !== index);
-    updateField(field, updatedArray);
-  };
-
-  const ArrayInput = ({ field, label, placeholder }: { field: keyof BehavioralProfile, label: string, placeholder: string }) => {
-    const [inputValue, setInputValue] = React.useState('');
-    const currentArray = (behavioralProfile[field] as string[]) || [];
-
-    const handleAdd = () => {
-      addToArray(field, inputValue);
-      setInputValue('');
-    };
-
-    return (
-      <div className="space-y-2">
-        <Label>{label}</Label>
-        <div className="flex space-x-2">
-          <Input
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder={placeholder}
-            onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
-          />
-          <Button type="button" onClick={handleAdd} size="sm">
-            <Plus className="w-4 h-4" />
-          </Button>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {currentArray.map((item, index) => (
-            <Badge key={index} variant="secondary" className="flex items-center gap-1">
-              {item}
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => removeFromArray(field, index)}
-                className="h-auto p-0 w-4 h-4"
-              >
-                <X className="w-3 h-3" />
-              </Button>
-            </Badge>
-          ))}
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div className="space-y-6">
