@@ -107,7 +107,10 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
       recommendations,
       idealProfile,
       riskFactors,
-      nextSteps
+      nextSteps,
+      careerRoadmap: nextSteps,
+      positioningStrategies: recommendations.strategic,
+      developmentPlan: recommendations.development
     };
   };
 
@@ -155,6 +158,10 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
   ];
 
   if (analysisResult && selectedReportType) {
+    const behavioralProfile = assessmentData.behavioralProfile;
+    const symbolicMap = assessmentData.symbolicMap;
+    const unconsciousPatterns = assessmentData.unconsciousPatterns;
+
     return (
       <div className="min-h-screen bg-gradient-subtle">
         <div className="container mx-auto px-6 py-8">
@@ -169,155 +176,315 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
             </p>
           </div>
 
-          {/* Zona de Genialidade */}
-          <Card className="mb-8 bg-gradient-to-br from-accent/10 to-primary/5 border-accent/20">
-            <CardHeader>
-              <CardTitle className="flex items-center text-accent">
-                <Brain className="w-6 h-6 mr-2" />
-                Sua Zona de Genialidade
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-semibold mb-2">Essência Central:</h4>
-                  <p className="text-lg font-medium text-accent">{analysisResult.geniusZone.core}</p>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-semibold mb-2 flex items-center">
-                      <Shield className="w-4 h-4 mr-1" />
-                      Principais Forças:
-                    </h4>
-                    <ul className="space-y-1">
-                      {analysisResult.geniusZone.strengths.slice(0, 3).map((strength, index) => (
-                        <li key={index} className="text-sm">• {strength}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold mb-2 flex items-center">
-                      <Lightbulb className="w-4 h-4 mr-1" />
-                      Oportunidades:
-                    </h4>
-                    <ul className="space-y-1">
-                      {analysisResult.geniusZone.opportunities.slice(0, 3).map((opportunity, index) => (
-                        <li key={index} className="text-sm">• {opportunity}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {selectedReportType === 'executive' && (
+            <>
+              {/* Zona de Genialidade */}
+              <Card className="mb-8 bg-gradient-to-br from-accent/10 to-primary/5 border-accent/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-accent">
+                    <Brain className="w-6 h-6 mr-2" />
+                    Zona de Genialidade
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="font-semibold mb-2">Essência Central:</h4>
+                      <p className="text-lg font-medium text-accent">{analysisResult.geniusZone.core}</p>
+                    </div>
 
-          {/* Perfil Ideal */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Perfil Profissional Ideal</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                  <h4 className="font-semibold mb-2">Papel Ideal:</h4>
-                  <Badge variant="secondary" className="text-sm">{analysisResult.idealProfile.role}</Badge>
-                </div>
-                <div>
-                  <h4 className="font-semibold mb-2">Ambiente:</h4>
-                  <p className="text-sm">{analysisResult.idealProfile.environment}</p>
-                </div>
-                <div>
-                  <h4 className="font-semibold mb-2">Condições:</h4>
-                  <ul className="text-sm space-y-1">
-                    {analysisResult.idealProfile.conditions.slice(0, 2).map((condition, index) => (
-                      <li key={index}>• {condition}</li>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <h4 className="font-semibold mb-2 flex items-center">
+                          <Shield className="w-4 h-4 mr-1" />
+                          Principais Forças:
+                        </h4>
+                        <ul className="space-y-1">
+                          {analysisResult.geniusZone.strengths.slice(0, 3).map((strength, index) => (
+                            <li key={index} className="text-sm">• {strength}</li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold mb-2 flex items-center">
+                          <Lightbulb className="w-4 h-4 mr-1" />
+                          Oportunidades:
+                        </h4>
+                        <ul className="space-y-1">
+                          {analysisResult.geniusZone.opportunities.slice(0, 3).map((opportunity, index) => (
+                            <li key={index} className="text-sm">• {opportunity}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Posicionamento Estratégico */}
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle>Posicionamento Estratégico</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                      <h4 className="font-semibold mb-2">Papel Ideal:</h4>
+                      <Badge variant="secondary" className="text-sm">{analysisResult.idealProfile.role}</Badge>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-2">Ambiente:</h4>
+                      <p className="text-sm">{analysisResult.idealProfile.environment}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-2">Condições:</h4>
+                      <ul className="text-sm space-y-1">
+                        {analysisResult.idealProfile.conditions.slice(0, 2).map((condition, index) => (
+                          <li key={index}>• {condition}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Próximos Passos */}
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle>Próximos Passos</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {analysisResult.nextSteps.map((step, index) => (
+                      <div key={index} className="flex items-start space-x-3">
+                        <div className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
+                          {index + 1}
+                        </div>
+                        <p className="text-sm flex-1">{step}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          )}
+
+          {selectedReportType === 'detailed' && (
+            <>
+              {/* Análise Comportamental */}
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Brain className="w-5 h-5 mr-2" />
+                    Análise Comportamental
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 text-sm">
+                    <div>
+                      <h4 className="font-semibold">MBTI</h4>
+                      <p>{behavioralProfile?.mbti || '-'}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">DISC</h4>
+                      <p>{behavioralProfile?.disc || '-'}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Eneagrama</h4>
+                      <p>{behavioralProfile?.enneagram || '-'}</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="font-semibold mb-2">Ambientes que energizam</h4>
+                      <ul className="space-y-1 text-sm">
+                        {behavioralProfile?.potentiatingEnvironments?.map((env, i) => (
+                          <li key={i}>• {env}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-2">Ambientes que drenam</h4>
+                      <ul className="space-y-1 text-sm">
+                        {behavioralProfile?.limitingEnvironments?.map((env, i) => (
+                          <li key={i}>• {env}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Mapa Simbólico */}
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle>Mapa Simbólico</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <h4 className="font-semibold">Caminho de Vida</h4>
+                      <p>{symbolicMap?.lifePathNumber || '-'}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Número da Alma</h4>
+                      <p>{symbolicMap?.soulNumber || '-'}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Número do Destino</h4>
+                      <p>{symbolicMap?.destinyNumber || '-'}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Signo Solar</h4>
+                      <p>{symbolicMap?.sunSign || '-'}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Padrões Inconscientes */}
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle>Padrões Inconscientes</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                    <div>
+                      <h4 className="font-semibold mb-2">Padrões a curar</h4>
+                      <ul className="space-y-1">
+                        {unconsciousPatterns?.patternsToHeal?.map((p, i) => (
+                          <li key={i}>• {p}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-2">Práticas que fortalecem</h4>
+                      <ul className="space-y-1">
+                        {unconsciousPatterns?.spiritualPractices?.map((p, i) => (
+                          <li key={i}>• {p}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Recomendações Detalhadas */}
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle>Recomendações Detalhadas</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+                    <div>
+                      <h4 className="font-semibold mb-2">Ações Imediatas</h4>
+                      <ul className="space-y-1">
+                        {analysisResult.recommendations.immediate.map((rec, index) => (
+                          <li key={index}>• {rec}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-2">Estratégias</h4>
+                      <ul className="space-y-1">
+                        {analysisResult.recommendations.strategic.map((rec, index) => (
+                          <li key={index}>• {rec}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-2">Desenvolvimento</h4>
+                      <ul className="space-y-1">
+                        {analysisResult.recommendations.development.map((rec, index) => (
+                          <li key={index}>• {rec}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                  {analysisResult.riskFactors.length > 0 && (
+                    <div className="mt-4">
+                      <h4 className="font-semibold mb-2">Riscos e Alertas</h4>
+                      <ul className="space-y-1 text-sm">
+                        {analysisResult.riskFactors.map((risk, i) => (
+                          <li key={i}>• {risk}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </>
+          )}
+
+          {selectedReportType === 'strategic' && (
+            <>
+              {/* Roteiro de Carreira */}
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle>Roteiro de Carreira</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {analysisResult.careerRoadmap.map((step, index) => (
+                      <div key={index} className="flex items-start space-x-3">
+                        <div className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
+                          {index + 1}
+                        </div>
+                        <p className="text-sm flex-1">{step}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Estratégias de Posicionamento */}
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle>Estratégias de Posicionamento</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2 text-sm">
+                    {analysisResult.positioningStrategies.map((rec, index) => (
+                      <li key={index}>• {rec}</li>
                     ))}
                   </ul>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
 
-          {/* Recomendações */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Ações Imediatas</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm">
-                  {analysisResult.recommendations.immediate.map((rec, index) => (
-                    <li key={index}>• {rec}</li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Estratégia de Médio Prazo</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm">
-                  {analysisResult.recommendations.strategic.map((rec, index) => (
-                    <li key={index}>• {rec}</li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Desenvolvimento</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm">
-                  {analysisResult.recommendations.development.map((rec, index) => (
-                    <li key={index}>• {rec}</li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Próximos Passos */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Próximos Passos Estratégicos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {analysisResult.nextSteps.map((step, index) => (
-                  <div key={index} className="flex items-start space-x-3">
-                    <div className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
-                      {index + 1}
-                    </div>
-                    <p className="text-sm flex-1">{step}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+              {/* Plano de Desenvolvimento */}
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle>Plano de Desenvolvimento</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2 text-sm">
+                    {analysisResult.developmentPlan.map((rec, index) => (
+                      <li key={index}>• {rec}</li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </>
+          )}
 
           {/* Botões de Ação */}
           <div className="flex justify-between items-center">
             <Button variant="outline" onClick={onBack}>
               Voltar ao Dashboard
             </Button>
-            
+
             <div className="flex space-x-4">
-              <Button 
-                onClick={() => window.print()} 
+              <Button
+                onClick={() => window.print()}
                 variant="secondary"
                 className="flex items-center"
               >
                 <Download className="w-4 h-4 mr-2" />
                 Baixar PDF
               </Button>
-              
-              <Button 
+
+              <Button
                 onClick={() => setAnalysisResult(null)}
                 variant="outline"
               >

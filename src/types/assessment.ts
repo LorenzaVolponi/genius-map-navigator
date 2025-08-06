@@ -134,6 +134,9 @@ export interface AnalysisResult {
   };
   riskFactors: string[];
   nextSteps: string[];
+  careerRoadmap: string[];
+  positioningStrategies: string[];
+  developmentPlan: string[];
 }
 
 export type ReportType = 'executive' | 'detailed' | 'strategic';
