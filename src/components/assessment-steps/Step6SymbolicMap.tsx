@@ -4,10 +4,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Moon, Sun, ArrowUp, Hash, Calendar } from 'lucide-react';
-import { SymbolicMap } from '@/types/assessment';
+import { PersonalInfo, SymbolicMap } from '@/types/assessment';
 
 interface Step6SymbolicMapProps {
-  data: { symbolicMap?: SymbolicMap };
+  data: { symbolicMap?: SymbolicMap; personalInfo?: PersonalInfo };
   onDataChange: (data: { symbolicMap: SymbolicMap }) => void;
 }
 
@@ -27,52 +27,62 @@ const lifeCycles = [
 ];
 
 const Step6SymbolicMap: React.FC<Step6SymbolicMapProps> = ({ data, onDataChange }) => {
-  const symbolicMap = data.symbolicMap || {
-    lifePathNumber: 0,
-    soulNumber: 0,
-    destinyNumber: 0,
-    sunSign: '',
-    moonSign: '',
-    ascendant: '',
-    currentLifeCycle: ''
-  };
+  const symbolicMap = React.useMemo(
+    () =>
+      data.symbolicMap || {
+        lifePathNumber: 0,
+        soulNumber: 0,
+        destinyNumber: 0,
+        sunSign: '',
+        moonSign: '',
+        ascendant: '',
+        currentLifeCycle: ''
+      },
+    [data.symbolicMap]
+  );
 
-  const updateField = (field: keyof SymbolicMap, value: any) => {
-    const updatedMap = { ...symbolicMap, [field]: value };
-    onDataChange({ symbolicMap: updatedMap });
-  };
+  const updateField = React.useCallback(
+    (field: keyof SymbolicMap, value: string | number) => {
+      const updatedMap = { ...symbolicMap, [field]: value };
+      onDataChange({ symbolicMap: updatedMap });
+    },
+    [symbolicMap, onDataChange]
+  );
 
   // Helper function to calculate numerological numbers
-  const calculateFromDate = (birthDate: string) => {
-    if (!birthDate) return;
-    
-    const [year, month, day] = birthDate.split('-').map(Number);
-    
-    // Life Path Number (sum of all digits in birth date)
-    const sumAllDigits = (num: number): number => {
-      const digits = num.toString().split('').map(Number);
-      const sum = digits.reduce((a, b) => a + b, 0);
-      return sum > 9 && sum !== 11 && sum !== 22 && sum !== 33 ? sumAllDigits(sum) : sum;
-    };
-    
-    const totalSum = sumAllDigits(day + month + year);
-    updateField('lifePathNumber', totalSum);
-    
-    // Soul Number (day of birth)
-    updateField('soulNumber', sumAllDigits(day));
-    
-    // Destiny Number (sum of complete date)
-    const destinySum = sumAllDigits(parseInt(`${day}${month}${year}`));
-    updateField('destinyNumber', destinySum);
-  };
+  const calculateFromDate = React.useCallback(
+    (birthDate: string) => {
+      if (!birthDate) return;
+
+      const [year, month, day] = birthDate.split('-').map(Number);
+
+      // Life Path Number (sum of all digits in birth date)
+      const sumAllDigits = (num: number): number => {
+        const digits = num.toString().split('').map(Number);
+        const sum = digits.reduce((a, b) => a + b, 0);
+        return sum > 9 && sum !== 11 && sum !== 22 && sum !== 33 ? sumAllDigits(sum) : sum;
+      };
+
+      const totalSum = sumAllDigits(day + month + year);
+      updateField('lifePathNumber', totalSum);
+
+      // Soul Number (day of birth)
+      updateField('soulNumber', sumAllDigits(day));
+
+      // Destiny Number (sum of complete date)
+      const destinySum = sumAllDigits(parseInt(`${day}${month}${year}`));
+      updateField('destinyNumber', destinySum);
+    },
+    [updateField]
+  );
 
   // Auto-calculate when there's a birth date in personal info
+  const birthDate = data.personalInfo?.birthDate;
   React.useEffect(() => {
-    const personalInfo = (data as any)?.personalInfo;
-    if (personalInfo?.birthDate) {
-      calculateFromDate(personalInfo.birthDate);
+    if (birthDate) {
+      calculateFromDate(birthDate);
     }
-  }, [(data as any)?.personalInfo?.birthDate]);
+  }, [birthDate, calculateFromDate]);
 
   return (
     <div className="space-y-6">
