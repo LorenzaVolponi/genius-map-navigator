@@ -47,8 +47,8 @@ const Step8StrategicPositioning: React.FC<Step8StrategicPositioningProps> = ({ d
 
         <div className="ml-7">
           <Textarea
-            value={strategicPositioning.areasOfInterest.join('\n\n')}
-            onChange={(e) => updateField('areasOfInterest', e.target.value.split('\n\n').filter(s => s.trim()))}
+            value={strategicPositioning.areasOfInterest.join('\n')}
+            onChange={(e) => updateField('areasOfInterest', e.target.value.split('\n').filter(s => s.trim()))}
             placeholder="Ex: Ética e governança de IA... Automação inteligente de processos..."
             rows={5}
           />
@@ -69,8 +69,8 @@ const Step8StrategicPositioning: React.FC<Step8StrategicPositioningProps> = ({ d
 
         <div className="ml-7">
           <Textarea
-            value={strategicPositioning.preferredRole.join('\n\n')}
-            onChange={(e) => updateField('preferredRole', e.target.value.split('\n\n').filter(s => s.trim()))}
+            value={strategicPositioning.preferredRole.join('\n')}
+            onChange={(e) => updateField('preferredRole', e.target.value.split('\n').filter(s => s.trim()))}
             placeholder="Ex: Estrategista, consultora fractional, facilitadora de transformação..."
             rows={4}
           />
@@ -109,8 +109,8 @@ const Step8StrategicPositioning: React.FC<Step8StrategicPositioningProps> = ({ d
         
         <div className="ml-7">
           <Textarea
-            value={strategicPositioning.acceptableProjects.join('\n\n')}
-            onChange={(e) => updateField('acceptableProjects', e.target.value.split('\n\n').filter(s => s.trim()))}
+            value={strategicPositioning.acceptableProjects.join('\n')}
+            onChange={(e) => updateField('acceptableProjects', e.target.value.split('\n').filter(s => s.trim()))}
             placeholder="Ex: Liderar a estratégia de IA de uma startup de impacto social... Criar um programa de educação em IA para comunidades underserved... Desenvolver protocolos éticos para uso de IA em saúde mental..."
             rows={5}
             className="bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/10"
@@ -127,8 +127,8 @@ const Step8StrategicPositioning: React.FC<Step8StrategicPositioningProps> = ({ d
         
         <div className="ml-7">
           <Textarea
-            value={strategicPositioning.rejectedProjects.join('\n\n')}
-            onChange={(e) => updateField('rejectedProjects', e.target.value.split('\n\n').filter(s => s.trim()))}
+            value={strategicPositioning.rejectedProjects.join('\n')}
+            onChange={(e) => updateField('rejectedProjects', e.target.value.split('\n').filter(s => s.trim()))}
             placeholder="Ex: Implementação de IA para vigilância sem transparência... Projetos que priorizam lucro sobre impacto social... Desenvolvimento de IA para manipulação de comportamento do consumidor..."
             rows={5}
             className="bg-gradient-to-r from-destructive/5 to-warning/5 border-destructive/10"

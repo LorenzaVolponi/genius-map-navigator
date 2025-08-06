@@ -27,18 +27,19 @@ const lifeCycles = [
 ];
 
 const Step6SymbolicMap: React.FC<Step6SymbolicMapProps> = ({ data, onDataChange }) => {
-  const symbolicMap = data.symbolicMap || {
-    lifePathNumber: 0,
-    soulNumber: 0,
-    destinyNumber: 0,
-    sunSign: '',
-    currentLifeCycle: ''
-  };
+  const symbolicMap = React.useMemo(() => (
+    data.symbolicMap || {
+      lifePathNumber: 0,
+      soulNumber: 0,
+      destinyNumber: 0,
+      sunSign: '',
+      currentLifeCycle: ''
+    }
+  ), [data.symbolicMap]);
 
   const updateField = React.useCallback(
     (field: keyof SymbolicMap, value: unknown) => {
-      const updatedMap = { ...symbolicMap, [field]: value };
-      onDataChange({ symbolicMap: updatedMap });
+      onDataChange({ symbolicMap: { ...symbolicMap, [field]: value } });
     },
     [symbolicMap, onDataChange]
   );
@@ -68,12 +69,12 @@ const Step6SymbolicMap: React.FC<Step6SymbolicMapProps> = ({ data, onDataChange 
   }, [updateField]);
 
   // Auto-calculate when there's a birth date in personal info
+  const birthDate = data.personalInfo?.birthDate;
   React.useEffect(() => {
-    const personalInfo = data.personalInfo;
-    if (personalInfo?.birthDate) {
-      calculateFromDate(personalInfo.birthDate);
+    if (birthDate) {
+      calculateFromDate(birthDate);
     }
-  }, [data.personalInfo, calculateFromDate]);
+  }, [birthDate, calculateFromDate]);
 
   return (
     <div className="space-y-6">
