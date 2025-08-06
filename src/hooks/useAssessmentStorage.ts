@@ -2,6 +2,22 @@ import { useState, useEffect } from 'react';
 import { AssessmentData } from '@/types/assessment';
 
 const STORAGE_KEY = 'geniusMapAssessment';
+const HISTORY_KEY = `${STORAGE_KEY}_history`;
+
+export const getAssessmentsHistory = (): AssessmentData[] => {
+  const history = localStorage.getItem(HISTORY_KEY);
+
+  if (!history) {
+    return [];
+  }
+
+  try {
+    return JSON.parse(history) as AssessmentData[];
+  } catch (error) {
+    console.warn('Failed to parse assessments history:', error);
+    return [];
+  }
+};
 
 export const useAssessmentStorage = () => {
   const [assessmentData, setAssessmentData] = useState<Partial<AssessmentData>>({});
