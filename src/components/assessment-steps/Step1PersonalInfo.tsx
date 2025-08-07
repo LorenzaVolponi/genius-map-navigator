@@ -45,18 +45,33 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     | 'desiredRoles'
     | 'workModels';
 
-  const ListTextarea = ({ field, label, placeholder }: { field: ArrayField, label: string, placeholder: string }) => (
-    <div className="space-y-2">
-      <Label htmlFor={field}>{label}</Label>
-      <Textarea
-        id={field}
-        value={(personalInfo[field] || []).join('\n')}
-        onChange={(e) => updateField(field, e.target.value.split('\n'))}
-        placeholder={placeholder}
-        rows={4}
-      />
-    </div>
-  );
+  const ListTextarea = ({ field, label, placeholder }: { field: ArrayField, label: string, placeholder: string }) => {
+    const [localValue, setLocalValue] = useState((personalInfo[field] || []).join('\n'));
+
+    const fieldValue = personalInfo[field];
+    React.useEffect(() => {
+      setLocalValue((fieldValue || []).join('\n'));
+    }, [fieldValue]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const { value } = e.target;
+      setLocalValue(value);
+      updateField(field, value.split('\n'));
+    };
+
+    return (
+      <div className="space-y-2">
+        <Label htmlFor={field}>{label}</Label>
+        <Textarea
+          id={field}
+          value={localValue}
+          onChange={handleChange}
+          placeholder={placeholder}
+          rows={4}
+        />
+      </div>
+    );
+  };
 
   const [loadingLinkedIn, setLoadingLinkedIn] = useState(false);
 
