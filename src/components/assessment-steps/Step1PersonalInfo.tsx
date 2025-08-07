@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -46,11 +46,26 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     | 'desiredRoles'
     | 'workModels';
 
-  const ListTextarea = ({ field, label, placeholder }: { field: ArrayField; label: string; placeholder: string }) => {
-    const value = (personalInfo[field] || []).join('\n');
+  const ListTextarea = ({
+    field,
+    label,
+    placeholder,
+  }: {
+    field: ArrayField;
+    label: string;
+    placeholder: string;
+  }) => {
+    const joined = (personalInfo[field] || []).join('\n');
+    const [value, setValue] = useState(joined);
+
+    useEffect(() => {
+      setValue(joined);
+    }, [joined]);
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      updateField(field, e.target.value.split('\n'));
+      const newValue = e.target.value;
+      setValue(newValue);
+      updateField(field, newValue.split('\n'));
     };
 
     return (
@@ -93,9 +108,12 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
         return;
       }
 
+      profileId = encodeURIComponent(profileId.trim());
+
       const urls = [
         `https://r.jina.ai/https://www.linkedin.com/in/${profileId}`,
-        `https://r.jina.ai/http://www.linkedin.com/in/${profileId}`
+        `https://r.jina.ai/http://www.linkedin.com/in/${profileId}`,
+        `https://r.jina.ai/https://linkedin.com/in/${profileId}`,
       ];
 
       let text = '';
