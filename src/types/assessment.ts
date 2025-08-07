@@ -23,6 +23,7 @@ export interface BehavioralProfile {
   mbti: string;
   disc: string;
   enneagram: string;
+  traitKeywords: string[];
   otherTests: string[];
   energizingSituations: string[];
   drainingsituations: string[];

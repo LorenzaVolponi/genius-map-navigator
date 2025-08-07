@@ -94,6 +94,7 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
     const geniusZone = {
       core: finalSynthesis?.greatestGift || "Facilitação de transformações sistêmicas",
       strengths: [
+        ...(behavioralProfile?.traitKeywords?.slice(0, 3) || []),
         ...(talentsAndFlow?.flowMoments?.slice(0, 3) || []),
         ...(behavioralProfile?.energizingSituations?.slice(0, 2) || [])
       ].filter(Boolean),
@@ -347,6 +348,16 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
                       <p>{behavioralProfile?.enneagram || '-'}</p>
                     </div>
                   </div>
+                  {behavioralProfile?.traitKeywords?.length ? (
+                    <div className="mb-4">
+                      <h4 className="font-semibold mb-2">Palavras que te definem</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {behavioralProfile.traitKeywords.map(word => (
+                          <Badge key={word} variant="secondary">{word}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <h4 className="font-semibold mb-2">Ambientes que energizam</h4>

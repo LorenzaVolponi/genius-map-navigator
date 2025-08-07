@@ -2,6 +2,7 @@ import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import { BehavioralProfile } from '@/types/assessment';
 
 interface Step2BehavioralProfileProps {
@@ -14,6 +15,7 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
     mbti: '',
     disc: '',
     enneagram: '',
+    traitKeywords: [],
     otherTests: [],
     energizingSituations: [],
     drainingsituations: [],
@@ -24,6 +26,29 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
   const updateField = (field: keyof BehavioralProfile, value: unknown) => {
     const updatedProfile = { ...behavioralProfile, [field]: value };
     onDataChange({ behavioralProfile: updatedProfile });
+  };
+
+  const traitOptions = [
+    'Analítico',
+    'Criativo',
+    'Empático',
+    'Estratégico',
+    'Adaptável',
+    'Organizado',
+    'Visionário',
+    'Colaborador',
+    'Resiliente',
+    'Comunicativo',
+    'Decisivo',
+    'Detalhista'
+  ];
+
+  const toggleTrait = (trait: string) => {
+    const current = behavioralProfile.traitKeywords;
+    const updated = current.includes(trait)
+      ? current.filter(t => t !== trait)
+      : [...current, trait];
+    updateField('traitKeywords', updated);
   };
 
 
@@ -67,6 +92,21 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
           <p className="text-xs text-muted-foreground">
             9 tipos com asas ou tríades
           </p>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <Label className="text-base font-medium">Palavras que te descrevem *</Label>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+          {traitOptions.map(option => (
+            <label key={option} className="flex items-center space-x-2 text-sm">
+              <Checkbox
+                checked={behavioralProfile.traitKeywords.includes(option)}
+                onCheckedChange={() => toggleTrait(option)}
+              />
+              <span>{option}</span>
+            </label>
+          ))}
         </div>
       </div>
 
