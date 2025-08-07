@@ -142,7 +142,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartAssessment, onViewReports 
                       Informações básicas ✓
                     </Badge>
                   )}
-                  {assessmentData.behavioralProfile?.mbti && (
+                  {assessmentData.behavioralProfile?.traitKeywords?.length && (
                     <Badge variant="outline">
                       Perfil comportamental ✓
                     </Badge>
@@ -169,7 +169,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartAssessment, onViewReports 
               <ul className="space-y-2 text-sm">
                 <li className="flex items-center">
                   <div className="w-2 h-2 bg-primary rounded-full mr-3" />
-                  Tipologias comportamentais (MBTI, DISC, Eneagrama)
+                  Leitura comportamental por palavras-chave e IA
                 </li>
                 <li className="flex items-center">
                   <div className="w-2 h-2 bg-secondary rounded-full mr-3" />

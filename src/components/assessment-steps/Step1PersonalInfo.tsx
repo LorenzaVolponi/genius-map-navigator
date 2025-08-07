@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PersonalInfo } from '@/types/assessment';
 
@@ -16,6 +17,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     birthDate: '',
     gender: '',
     currentLocation: '',
+    linkedinUrl: '',
     preferredLocations: [],
     languages: [],
     education: [],
@@ -34,17 +36,50 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     onDataChange({ personalInfo: updatedInfo });
   };
 
-  const ListTextarea = ({ field, label, placeholder }: { field: keyof PersonalInfo, label: string, placeholder: string }) => (
+  type ArrayField =
+    | 'preferredLocations'
+    | 'languages'
+    | 'education'
+    | 'certifications'
+    | 'previousRoles'
+    | 'desiredRoles'
+    | 'workModels';
+
+  const ListTextarea = ({ field, label, placeholder }: { field: ArrayField, label: string, placeholder: string }) => (
     <div className="space-y-2">
-      <Label>{label}</Label>
+      <Label htmlFor={field}>{label}</Label>
       <Textarea
-        value={(personalInfo[field] as string[]).join('\n')}
+        id={field}
+        value={(personalInfo[field] || []).join('\n')}
         onChange={(e) => updateField(field, e.target.value.split('\n'))}
         placeholder={placeholder}
         rows={4}
       />
     </div>
   );
+
+  const [loadingLinkedIn, setLoadingLinkedIn] = useState(false);
+
+  const handleLinkedInImport = async () => {
+    if (!personalInfo.linkedinUrl) return;
+    try {
+      setLoadingLinkedIn(true);
+      const match = personalInfo.linkedinUrl.match(/linkedin\.com\/in\/([^/?]+)/i);
+      if (!match) return;
+      const res = await fetch(`https://r.jina.ai/https://www.linkedin.com/in/${match[1]}`);
+      const text = await res.text();
+      const nameMatch = text.match(/<title>([^|<]+)\|/);
+      if (nameMatch) updateField('fullName', nameMatch[1].trim());
+      const headlineMatch = text.match(/"headline":"([^"]+)"/);
+      if (headlineMatch) updateField('currentMotivation', headlineMatch[1]);
+      const locationMatch = text.match(/"location":"([^"]+)"/);
+      if (locationMatch) updateField('currentLocation', locationMatch[1]);
+    } catch (e) {
+      console.error('Erro ao importar LinkedIn', e);
+    } finally {
+      setLoadingLinkedIn(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -92,6 +127,21 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
             onChange={(e) => updateField('currentLocation', e.target.value)}
             placeholder="Ex: São Paulo, Brasil"
           />
+        </div>
+
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="linkedinUrl">LinkedIn</Label>
+          <div className="flex space-x-2">
+            <Input
+              id="linkedinUrl"
+              value={personalInfo.linkedinUrl}
+              onChange={(e) => updateField('linkedinUrl', e.target.value)}
+              placeholder="https://www.linkedin.com/in/seu-perfil"
+            />
+            <Button type="button" onClick={handleLinkedInImport} disabled={loadingLinkedIn || !personalInfo.linkedinUrl}>
+              {loadingLinkedIn ? 'Buscando...' : 'Importar'}
+            </Button>
+          </div>
         </div>
 
         <div className="space-y-2">

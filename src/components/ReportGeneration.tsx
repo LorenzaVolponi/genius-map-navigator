@@ -334,20 +334,6 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 text-sm">
-                    <div>
-                      <h4 className="font-semibold">MBTI</h4>
-                      <p>{behavioralProfile?.mbti || '-'}</p>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold">DISC</h4>
-                      <p>{behavioralProfile?.disc || '-'}</p>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold">Eneagrama</h4>
-                      <p>{behavioralProfile?.enneagram || '-'}</p>
-                    </div>
-                  </div>
                   {behavioralProfile?.traitKeywords?.length ? (
                     <div className="mb-4">
                       <h4 className="font-semibold mb-2">Palavras que te definem</h4>

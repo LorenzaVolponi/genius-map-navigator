@@ -1,5 +1,4 @@
 import React from 'react';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -12,9 +11,6 @@ interface Step2BehavioralProfileProps {
 
 const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, onDataChange }) => {
   const behavioralProfile = data.behavioralProfile || {
-    mbti: '',
-    disc: '',
-    enneagram: '',
     traitKeywords: [],
     otherTests: [],
     energizingSituations: [],
@@ -40,7 +36,25 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
     'Resiliente',
     'Comunicativo',
     'Decisivo',
-    'Detalhista'
+    'Detalhista',
+    'Inovador',
+    'Inspirador',
+    'Observador',
+    'Pragmático',
+    'Intuitivo',
+    'Persistente',
+    'Diplomático',
+    'Proativo',
+    'Assertivo',
+    'Generoso',
+    'Cuidadoso',
+    'Motivador',
+    'Independente',
+    'Flexível',
+    'Ambicioso',
+    'Curioso',
+    'Focado',
+    'Leal'
   ];
 
   const toggleTrait = (trait: string) => {
@@ -54,47 +68,6 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="space-y-2">
-          <Label htmlFor="mbti">MBTI *</Label>
-          <Input
-            id="mbti"
-            value={behavioralProfile.mbti}
-            onChange={(e) => updateField('mbti', e.target.value)}
-            placeholder="Ex: INFJ, ENTP"
-          />
-          <p className="text-xs text-muted-foreground">
-            16 tipos de personalidade Myers-Briggs
-          </p>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="disc">DISC *</Label>
-          <Input
-            id="disc"
-            value={behavioralProfile.disc}
-            onChange={(e) => updateField('disc', e.target.value)}
-            placeholder="Ex: D/I, S/C"
-          />
-          <p className="text-xs text-muted-foreground">
-            Dominância, Influência, Estabilidade, Conscienciosidade
-          </p>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="enneagram">Eneagrama</Label>
-          <Input
-            id="enneagram"
-            value={behavioralProfile.enneagram}
-            onChange={(e) => updateField('enneagram', e.target.value)}
-            placeholder="Ex: Tipo 8, 3w4"
-          />
-          <p className="text-xs text-muted-foreground">
-            9 tipos com asas ou tríades
-          </p>
-        </div>
-      </div>
-
       <div className="space-y-3">
         <Label className="text-base font-medium">Palavras que te descrevem *</Label>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -177,7 +150,7 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
       <div className="bg-muted/50 p-4 rounded-lg">
         <h4 className="font-medium mb-2">Dicas para Preenchimento</h4>
         <ul className="text-sm text-muted-foreground space-y-1">
-          <li>• Se não souber seu MBTI ou DISC, faça um teste online gratuito</li>
+          <li>• Selecione as palavras que mais te representam</li>
           <li>• Seja específico nas situações e ambientes</li>
           <li>• Pense em momentos reais da sua carreira</li>
           <li>• Considere tanto aspectos físicos quanto culturais do ambiente</li>

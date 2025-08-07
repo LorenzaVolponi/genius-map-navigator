@@ -3,6 +3,7 @@ export interface PersonalInfo {
   birthDate: string;
   gender: string;
   currentLocation: string;
+  linkedinUrl: string;
   preferredLocations: string[];
   languages: string[];
   education: string[];
@@ -20,9 +21,6 @@ export interface PersonalInfo {
 }
 
 export interface BehavioralProfile {
-  mbti: string;
-  disc: string;
-  enneagram: string;
   traitKeywords: string[];
   otherTests: string[];
   energizingSituations: string[];
