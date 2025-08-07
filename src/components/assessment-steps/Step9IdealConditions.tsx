@@ -84,7 +84,10 @@ const Step9IdealConditions: React.FC<Step9IdealConditionsProps> = ({ data, onDat
     priorities: []
   };
 
-  const updateField = (field: keyof IdealConditions, value: any) => {
+  const updateField = <K extends keyof IdealConditions>(
+    field: K,
+    value: IdealConditions[K]
+  ) => {
     const updatedConditions = { ...idealConditions, [field]: value };
     onDataChange({ idealConditions: updatedConditions });
   };
