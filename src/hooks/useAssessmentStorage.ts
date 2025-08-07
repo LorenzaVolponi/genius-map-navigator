@@ -107,6 +107,10 @@ export const useAssessmentStorage = () => {
     localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
   };
 
+  const clearAssessmentsHistory = () => {
+    localStorage.removeItem(HISTORY_KEY);
+  };
+
   const startNewAssessment = () => {
     clearAssessmentData();
   };
@@ -121,6 +125,7 @@ export const useAssessmentStorage = () => {
     getCompletionPercentage,
     getAssessmentsHistory,
     saveAssessmentToHistory,
+     clearAssessmentsHistory,
     startNewAssessment,
   };
 };
