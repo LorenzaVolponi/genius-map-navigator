@@ -73,13 +73,26 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     if (!personalInfo.linkedinUrl) return;
     try {
       setLoadingLinkedIn(true);
-      const match = personalInfo.linkedinUrl.match(/linkedin\.com\/in\/([^/?]+)/i);
-      if (!match) {
+
+      let profileId = '';
+      try {
+        const url = new URL(personalInfo.linkedinUrl);
+        const parts = url.pathname.split('/').filter(Boolean);
+        profileId = parts[0] || '';
+      } catch {
+        /* fall back to regex below */
+      }
+
+      if (!profileId) {
+        const match = personalInfo.linkedinUrl.match(/linkedin\.com\/in\/([^/?]+)/i);
+        if (match) profileId = match[1];
+      }
+
+      if (!profileId) {
         toast({ title: 'URL inválida do LinkedIn' });
         return;
       }
 
-      const profileId = match[1];
       const urls = [
         `https://r.jina.ai/https://www.linkedin.com/in/${profileId}`,
         `https://r.jina.ai/http://www.linkedin.com/in/${profileId}`
@@ -98,15 +111,13 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
         }
       }
 
-      if (!text) {
-        throw new Error('Dados não encontrados');
-      }
+      if (!text) throw new Error('Dados não encontrados');
 
       let fullName = personalInfo.fullName;
       let headline = personalInfo.currentMotivation;
       let location = personalInfo.currentLocation;
 
-      const ldMatch = text.match(/<script type="application\/ld\+json">([^<]+)<\/script>/);
+      const ldMatch = text.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
       if (ldMatch) {
         try {
           const data = JSON.parse(ldMatch[1]);
