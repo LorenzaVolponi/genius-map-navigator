@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AssessmentData } from '@/types/assessment';
 
 interface SavedAssessment {
@@ -14,12 +14,13 @@ const HISTORY_KEY = 'geniusMapAnalyses';
 export const useAssessmentStorage = () => {
   const [assessmentData, setAssessmentData] = useState<Partial<AssessmentData>>({});
   const [currentStep, setCurrentStep] = useState(1);
+  const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Load data from localStorage on mount
   useEffect(() => {
     const savedData = localStorage.getItem(STORAGE_KEY);
     const savedStep = localStorage.getItem(`${STORAGE_KEY}_step`);
-    
+
     if (savedData) {
       try {
         setAssessmentData(JSON.parse(savedData));
@@ -27,17 +28,30 @@ export const useAssessmentStorage = () => {
         console.error('Error loading saved assessment data:', error);
       }
     }
-    
+
     if (savedStep) {
       setCurrentStep(parseInt(savedStep, 10));
     }
   }, []);
 
-  // Save data to localStorage whenever it changes
+  // Save data to localStorage with debounce to avoid UI lag
+  useEffect(() => {
+    if (saveTimeout.current) {
+      clearTimeout(saveTimeout.current);
+    }
+    saveTimeout.current = setTimeout(() => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(assessmentData));
+    }, 300);
+
+    return () => {
+      if (saveTimeout.current) {
+        clearTimeout(saveTimeout.current);
+      }
+    };
+  }, [assessmentData]);
+
   const updateAssessmentData = (newData: Partial<AssessmentData>) => {
-    const updatedData = { ...assessmentData, ...newData };
-    setAssessmentData(updatedData);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
+    setAssessmentData(prev => ({ ...prev, ...newData }));
   };
 
   // Save current step
@@ -48,6 +62,9 @@ export const useAssessmentStorage = () => {
 
   // Clear all data
   const clearAssessmentData = () => {
+    if (saveTimeout.current) {
+      clearTimeout(saveTimeout.current);
+    }
     setAssessmentData({});
     setCurrentStep(1);
     localStorage.removeItem(STORAGE_KEY);
@@ -125,7 +142,7 @@ export const useAssessmentStorage = () => {
     getCompletionPercentage,
     getAssessmentsHistory,
     saveAssessmentToHistory,
-     clearAssessmentsHistory,
+    clearAssessmentsHistory,
     startNewAssessment,
   };
 };
