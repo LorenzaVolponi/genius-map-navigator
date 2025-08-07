@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { toast } from '@/components/ui/use-toast';
 import { PersonalInfo } from '@/types/assessment';
 
 interface Step1PersonalInfoProps {
@@ -80,17 +81,74 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     try {
       setLoadingLinkedIn(true);
       const match = personalInfo.linkedinUrl.match(/linkedin\.com\/in\/([^/?]+)/i);
-      if (!match) return;
-      const res = await fetch(`https://r.jina.ai/https://www.linkedin.com/in/${match[1]}`);
-      const text = await res.text();
-      const nameMatch = text.match(/<title>([^|<]+)\|/);
-      if (nameMatch) updateField('fullName', nameMatch[1].trim());
-      const headlineMatch = text.match(/"headline":"([^"]+)"/);
-      if (headlineMatch) updateField('currentMotivation', headlineMatch[1]);
-      const locationMatch = text.match(/"location":"([^"]+)"/);
-      if (locationMatch) updateField('currentLocation', locationMatch[1]);
+      if (!match) {
+        toast({ title: 'URL inválida do LinkedIn' });
+        return;
+      }
+
+      const profileId = match[1];
+      const urls = [
+        `https://r.jina.ai/https://www.linkedin.com/in/${profileId}`,
+        `https://r.jina.ai/http://www.linkedin.com/in/${profileId}`
+      ];
+
+      let text = '';
+      for (const url of urls) {
+        try {
+          const res = await fetch(url);
+          if (res.ok) {
+            text = await res.text();
+            if (text) break;
+          }
+        } catch {
+          /* ignore and try next url */
+        }
+      }
+
+      if (!text) {
+        throw new Error('Dados não encontrados');
+      }
+
+      let fullName = personalInfo.fullName;
+      let headline = personalInfo.currentMotivation;
+      let location = personalInfo.currentLocation;
+
+      const ldMatch = text.match(/<script type="application\/ld\+json">([^<]+)<\/script>/);
+      if (ldMatch) {
+        try {
+          const data = JSON.parse(ldMatch[1]);
+          fullName = fullName || data.name || '';
+          headline = headline || data.jobTitle || '';
+          location = location || data.address?.addressLocality || '';
+        } catch {
+          /* ignore json parse errors */
+        }
+      }
+
+      if (!fullName) {
+        const nameMatch = text.match(/<title>([^|<]+)\|/);
+        if (nameMatch) fullName = nameMatch[1].trim();
+      }
+      if (!headline) {
+        const headlineMatch = text.match(/"headline":"([^"]+)"/);
+        if (headlineMatch) headline = headlineMatch[1];
+      }
+      if (!location) {
+        const locationMatch = text.match(/"location":"([^"]+)"/);
+        if (locationMatch) location = locationMatch[1];
+      }
+
+      if (fullName) updateField('fullName', fullName);
+      if (headline) updateField('currentMotivation', headline);
+      if (location) updateField('currentLocation', location);
+
+      toast({ title: 'Dados do LinkedIn importados' });
     } catch (e) {
       console.error('Erro ao importar LinkedIn', e);
+      toast({
+        title: 'Erro ao importar LinkedIn',
+        description: 'Não foi possível obter os dados do perfil informado.'
+      });
     } finally {
       setLoadingLinkedIn(false);
     }
