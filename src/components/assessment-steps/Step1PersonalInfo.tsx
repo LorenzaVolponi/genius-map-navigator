@@ -46,18 +46,11 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     | 'desiredRoles'
     | 'workModels';
 
-  const ListTextarea = ({ field, label, placeholder }: { field: ArrayField, label: string, placeholder: string }) => {
-    const [localValue, setLocalValue] = useState((personalInfo[field] || []).join('\n'));
-
-    const fieldValue = personalInfo[field];
-    React.useEffect(() => {
-      setLocalValue((fieldValue || []).join('\n'));
-    }, [fieldValue]);
+  const ListTextarea = ({ field, label, placeholder }: { field: ArrayField; label: string; placeholder: string }) => {
+    const value = (personalInfo[field] || []).join('\n');
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const { value } = e.target;
-      setLocalValue(value);
-      updateField(field, value.split('\n'));
+      updateField(field, e.target.value.split('\n'));
     };
 
     return (
@@ -65,7 +58,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
         <Label htmlFor={field}>{label}</Label>
         <Textarea
           id={field}
-          value={localValue}
+          value={value}
           onChange={handleChange}
           placeholder={placeholder}
           rows={4}
