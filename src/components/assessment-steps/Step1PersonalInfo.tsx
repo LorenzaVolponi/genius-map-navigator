@@ -2,11 +2,84 @@ import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { X, Plus } from 'lucide-react';
 import { PersonalInfo } from '@/types/assessment';
+
+interface ArrayInputProps<K extends keyof PersonalInfo> {
+  field: K;
+  label: string;
+  placeholder: string;
+  values: string[];
+  onAdd: (field: K, value: string) => void;
+  onRemove: (field: K, index: number) => void;
+}
+
+const ArrayInput = <K extends keyof PersonalInfo>({
+  field,
+  label,
+  placeholder,
+  values,
+  onAdd,
+  onRemove,
+}: ArrayInputProps<K>) => {
+  const [inputValue, setInputValue] = React.useState('');
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleAdd = () => {
+    onAdd(field, inputValue);
+    setInputValue('');
+    inputRef.current?.focus();
+  };
+
+  return (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      <div className="flex space-x-2">
+        <Input
+          ref={inputRef}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder={placeholder}
+          autoComplete="off"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              handleAdd();
+            }
+          }}
+        />
+        <Button type="button" onClick={handleAdd} size="sm">
+          <Plus className="w-4 h-4" />
+        </Button>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {values.map((item, index) => (
+          <Badge key={index} variant="secondary" className="flex items-center gap-1">
+            {item}
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => onRemove(field, index)}
+              className="h-auto p-0 w-4 h-4"
+            >
+              <X className="w-3 h-3" />
+            </Button>
+          </Badge>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 interface Step1PersonalInfoProps {
   data: { personalInfo?: PersonalInfo };
@@ -49,58 +122,6 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     const currentArray = (personalInfo[field] as string[]) || [];
     const updatedArray = currentArray.filter((_, i) => i !== index);
     updateField(field, updatedArray as PersonalInfo[K]);
-  };
-
-  const ArrayInput = ({ field, label, placeholder }: { field: keyof PersonalInfo, label: string, placeholder: string }) => {
-    const [inputValue, setInputValue] = React.useState('');
-    const inputRef = React.useRef<HTMLInputElement>(null);
-    const currentArray = (personalInfo[field] as string[]) || [];
-
-    const handleAdd = () => {
-      addToArray(field, inputValue);
-      setInputValue('');
-      inputRef.current?.focus();
-    };
-
-    return (
-      <div className="space-y-2">
-        <Label>{label}</Label>
-        <div className="flex space-x-2">
-          <Input
-            ref={inputRef}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder={placeholder}
-            autoComplete="off"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                handleAdd();
-              }
-            }}
-          />
-          <Button type="button" onClick={handleAdd} size="sm">
-            <Plus className="w-4 h-4" />
-          </Button>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {currentArray.map((item, index) => (
-            <Badge key={index} variant="secondary" className="flex items-center gap-1">
-              {item}
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => removeFromArray(field, index)}
-                className="h-auto p-0 w-4 h-4"
-              >
-                <X className="w-3 h-3" />
-              </Button>
-            </Badge>
-          ))}
-        </div>
-      </div>
-    );
   };
 
   return (
@@ -203,13 +224,62 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
         </div>
       </div>
 
-      <ArrayInput field="preferredLocations" label="Locais Preferidos para Atuar" placeholder="Ex: Londres, Nova York" />
-      <ArrayInput field="languages" label="Idiomas" placeholder="Ex: Inglês fluente" />
-      <ArrayInput field="education" label="Formação Acadêmica" placeholder="Ex: MBA em Gestão" />
-      <ArrayInput field="certifications" label="Certificações" placeholder="Ex: PMP, Scrum Master" />
-      <ArrayInput field="previousRoles" label="Cargos Anteriores Relevantes" placeholder="Ex: Diretor de Marketing" />
-      <ArrayInput field="desiredRoles" label="Cargos Desejados" placeholder="Ex: Chief Innovation Officer" />
-      <ArrayInput field="workModels" label="Modelos de Trabalho Preferidos" placeholder="Ex: PJ, Consultoria" />
+      <ArrayInput
+        field="preferredLocations"
+        label="Locais Preferidos para Atuar"
+        placeholder="Ex: Londres, Nova York"
+        values={personalInfo.preferredLocations}
+        onAdd={addToArray}
+        onRemove={removeFromArray}
+      />
+      <ArrayInput
+        field="languages"
+        label="Idiomas"
+        placeholder="Ex: Inglês fluente"
+        values={personalInfo.languages}
+        onAdd={addToArray}
+        onRemove={removeFromArray}
+      />
+      <ArrayInput
+        field="education"
+        label="Formação Acadêmica"
+        placeholder="Ex: MBA em Gestão"
+        values={personalInfo.education}
+        onAdd={addToArray}
+        onRemove={removeFromArray}
+      />
+      <ArrayInput
+        field="certifications"
+        label="Certificações"
+        placeholder="Ex: PMP, Scrum Master"
+        values={personalInfo.certifications}
+        onAdd={addToArray}
+        onRemove={removeFromArray}
+      />
+      <ArrayInput
+        field="previousRoles"
+        label="Cargos Anteriores Relevantes"
+        placeholder="Ex: Diretor de Marketing"
+        values={personalInfo.previousRoles}
+        onAdd={addToArray}
+        onRemove={removeFromArray}
+      />
+      <ArrayInput
+        field="desiredRoles"
+        label="Cargos Desejados"
+        placeholder="Ex: Chief Innovation Officer"
+        values={personalInfo.desiredRoles}
+        onAdd={addToArray}
+        onRemove={removeFromArray}
+      />
+      <ArrayInput
+        field="workModels"
+        label="Modelos de Trabalho Preferidos"
+        placeholder="Ex: PJ, Consultoria"
+        values={personalInfo.workModels}
+        onAdd={addToArray}
+        onRemove={removeFromArray}
+      />
 
       <div className="space-y-2">
         <Label htmlFor="currentMotivation">Motivação Profissional Atual</Label>
