@@ -25,12 +25,22 @@ export const useAssessmentStorage = () => {
     }
   }, []);
 
-  // Save data to localStorage whenever it changes
+  // Save data to state and persist to localStorage with a small debounce
   const updateAssessmentData = (newData: Partial<AssessmentData>) => {
-    const updatedData = { ...assessmentData, ...newData };
-    setAssessmentData(updatedData);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
+    setAssessmentData((prev) => ({ ...prev, ...newData }));
   };
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(assessmentData));
+      } catch (error) {
+        console.error('Error saving assessment data:', error);
+      }
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [assessmentData]);
 
   // Save current step
   const updateCurrentStep = (step: number) => {
