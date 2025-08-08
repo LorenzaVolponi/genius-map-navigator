@@ -94,6 +94,16 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     );
   };
 
+  const arrayInputConfigs: { field: keyof PersonalInfo; label: string; placeholder: string }[] = [
+    { field: 'preferredLocations', label: 'Locais Preferidos para Atuar', placeholder: 'Ex: Londres, Nova York' },
+    { field: 'languages', label: 'Idiomas', placeholder: 'Ex: Inglês fluente' },
+    { field: 'education', label: 'Formação Acadêmica', placeholder: 'Ex: MBA em Gestão' },
+    { field: 'certifications', label: 'Certificações', placeholder: 'Ex: PMP, Scrum Master' },
+    { field: 'previousRoles', label: 'Cargos Anteriores Relevantes', placeholder: 'Ex: Diretor de Marketing' },
+    { field: 'desiredRoles', label: 'Cargos Desejados', placeholder: 'Ex: Chief Innovation Officer' },
+    { field: 'workModels', label: 'Modelos de Trabalho Preferidos', placeholder: 'Ex: PJ, Consultoria' }
+  ];
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -194,13 +204,14 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
         </div>
       </div>
 
-      <ArrayInput field="preferredLocations" label="Locais Preferidos para Atuar" placeholder="Ex: Londres, Nova York" />
-      <ArrayInput field="languages" label="Idiomas" placeholder="Ex: Inglês fluente" />
-      <ArrayInput field="education" label="Formação Acadêmica" placeholder="Ex: MBA em Gestão" />
-      <ArrayInput field="certifications" label="Certificações" placeholder="Ex: PMP, Scrum Master" />
-      <ArrayInput field="previousRoles" label="Cargos Anteriores Relevantes" placeholder="Ex: Diretor de Marketing" />
-      <ArrayInput field="desiredRoles" label="Cargos Desejados" placeholder="Ex: Chief Innovation Officer" />
-      <ArrayInput field="workModels" label="Modelos de Trabalho Preferidos" placeholder="Ex: PJ, Consultoria" />
+      {arrayInputConfigs.map(({ field, label, placeholder }) => (
+        <ArrayInput
+          key={field}
+          field={field}
+          label={label}
+          placeholder={placeholder}
+        />
+      ))}
 
       <div className="space-y-2">
         <Label htmlFor="currentMotivation">Motivação Profissional Atual</Label>
