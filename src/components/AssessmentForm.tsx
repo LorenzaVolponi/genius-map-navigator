@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -48,6 +48,10 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onBack, onComplete }) =
   } = useAssessmentStorage();
 
   const [localData, setLocalData] = useState<Partial<AssessmentData>>(assessmentData);
+
+  useEffect(() => {
+    setLocalData(assessmentData);
+  }, [assessmentData]);
 
   const progress = ((currentStep - 1) / steps.length) * 100;
   const completionPercentage = getCompletionPercentage();

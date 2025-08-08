@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -32,10 +32,10 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     currentMotivation: ''
   };
 
-  const updateField = (field: keyof PersonalInfo, value: unknown) => {
-    const updatedInfo = { ...personalInfo, [field]: value };
+  const updateField = useCallback(<K extends keyof PersonalInfo>(field: K, value: PersonalInfo[K]) => {
+    const updatedInfo: PersonalInfo = { ...personalInfo, [field]: value };
     onDataChange({ personalInfo: updatedInfo });
-  };
+  }, [personalInfo, onDataChange]);
 
   type ArrayField =
     | 'preferredLocations'
@@ -65,7 +65,11 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       const newValue = e.target.value;
       setValue(newValue);
-      updateField(field, newValue.split('\n'));
+      const values = newValue
+        .split('\n')
+        .map((v) => v.trim())
+        .filter(Boolean);
+      updateField(field, values as PersonalInfo[ArrayField]);
     };
 
     return (
