@@ -17,18 +17,30 @@ const Index = () => {
 
   const handleViewReports = () => {
     // Carregar dados do assessment do localStorage
-    const savedData = localStorage.getItem('geniusMapAssessment');
-    if (savedData) {
-      setAssessmentData(JSON.parse(savedData));
+    if (typeof window !== 'undefined') {
+      const savedData = localStorage.getItem('geniusMapAssessment');
+      if (savedData) {
+        try {
+          setAssessmentData(JSON.parse(savedData));
+        } catch (error) {
+          console.error('Failed to parse assessment data', error);
+        }
+      }
     }
     setCurrentView('reports');
   };
 
   const handleAssessmentComplete = () => {
     // Carregar dados do assessment do localStorage
-    const savedData = localStorage.getItem('geniusMapAssessment');
-    if (savedData) {
-      setAssessmentData(JSON.parse(savedData));
+    if (typeof window !== 'undefined') {
+      const savedData = localStorage.getItem('geniusMapAssessment');
+      if (savedData) {
+        try {
+          setAssessmentData(JSON.parse(savedData));
+        } catch (error) {
+          console.error('Failed to parse assessment data', error);
+        }
+      }
     }
     setCurrentView('reports');
   };
