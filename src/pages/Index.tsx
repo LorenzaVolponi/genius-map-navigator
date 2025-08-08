@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import Dashboard from '@/components/Dashboard';
 import AssessmentForm from '@/components/AssessmentForm';
 import ReportGeneration from '@/components/ReportGeneration';
+import type { AssessmentData } from '@/types/assessment';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<'dashboard' | 'assessment' | 'reports'>('dashboard');
-  const [assessmentData, setAssessmentData] = useState<any>(null);
+  const [assessmentData, setAssessmentData] = useState<AssessmentData | null>(null);
 
   const handleStartAssessment = () => {
     setCurrentView('assessment');

@@ -20,7 +20,10 @@ const Step4ImpactMarkers: React.FC<Step4ImpactMarkersProps> = ({ data, onDataCha
     peopleYouMentored: []
   };
 
-  const updateField = (field: keyof ImpactMarkers, value: any) => {
+  const updateField = (
+    field: keyof ImpactMarkers,
+    value: ImpactMarkers[keyof ImpactMarkers]
+  ) => {
     const updatedMarkers = { ...impactMarkers, [field]: value };
     onDataChange({ impactMarkers: updatedMarkers });
   };

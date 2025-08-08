@@ -20,7 +20,10 @@ const Step5LimitsAndNonNegotiables: React.FC<Step5LimitsAndNonNegotiablesProps> 
     idealProjects: []
   };
 
-  const updateField = (field: keyof LimitsAndNonNegotiables, value: any) => {
+  const updateField = (
+    field: keyof LimitsAndNonNegotiables,
+    value: LimitsAndNonNegotiables[keyof LimitsAndNonNegotiables]
+  ) => {
     const updatedLimits = { ...limitsAndNonNegotiables, [field]: value };
     onDataChange({ limitsAndNonNegotiables: updatedLimits });
   };
