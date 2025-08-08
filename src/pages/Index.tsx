@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import Dashboard from '@/components/Dashboard';
 import AssessmentForm from '@/components/AssessmentForm';
 import ReportGeneration from '@/components/ReportGeneration';
+import { AssessmentData } from '@/types/assessment';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<'dashboard' | 'assessment' | 'reports'>('dashboard');
-  const [assessmentData, setAssessmentData] = useState<any>(null);
+  const [assessmentData, setAssessmentData] = useState<AssessmentData | null>(null);
 
   const handleStartAssessment = () => {
     setCurrentView('assessment');
@@ -19,7 +20,7 @@ const Index = () => {
     // Carregar dados do assessment do localStorage
     const savedData = localStorage.getItem('geniusMapAssessment');
     if (savedData) {
-      setAssessmentData(JSON.parse(savedData));
+      setAssessmentData(JSON.parse(savedData) as AssessmentData);
     }
     setCurrentView('reports');
   };
@@ -28,7 +29,7 @@ const Index = () => {
     // Carregar dados do assessment do localStorage
     const savedData = localStorage.getItem('geniusMapAssessment');
     if (savedData) {
-      setAssessmentData(JSON.parse(savedData));
+      setAssessmentData(JSON.parse(savedData) as AssessmentData);
     }
     setCurrentView('reports');
   };
