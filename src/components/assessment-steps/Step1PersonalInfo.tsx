@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { X, Plus } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { toast } from '@/components/ui/use-toast';
 import { PersonalInfo } from '@/types/assessment';
 
 interface Step1PersonalInfoProps {
@@ -19,6 +18,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     birthDate: '',
     gender: '',
     currentLocation: '',
+    linkedinUrl: '',
     preferredLocations: [],
     languages: [],
     education: [],
@@ -32,66 +32,148 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     currentMotivation: ''
   };
 
-  const updateField = (field: keyof PersonalInfo, value: any) => {
+  const updateField = (field: keyof PersonalInfo, value: unknown) => {
     const updatedInfo = { ...personalInfo, [field]: value };
     onDataChange({ personalInfo: updatedInfo });
   };
 
-  const addToArray = (field: keyof PersonalInfo, value: string) => {
-    if (value.trim()) {
-      const currentArray = (personalInfo[field] as string[]) || [];
-      const updatedArray = [...currentArray, value.trim()];
-      updateField(field, updatedArray);
-    }
-  };
+  type ArrayField =
+    | 'preferredLocations'
+    | 'languages'
+    | 'education'
+    | 'certifications'
+    | 'previousRoles'
+    | 'desiredRoles'
+    | 'workModels';
 
-  const removeFromArray = (field: keyof PersonalInfo, index: number) => {
-    const currentArray = (personalInfo[field] as string[]) || [];
-    const updatedArray = currentArray.filter((_, i) => i !== index);
-    updateField(field, updatedArray);
-  };
+  const ListTextarea = ({
+    field,
+    label,
+    placeholder,
+  }: {
+    field: ArrayField;
+    label: string;
+    placeholder: string;
+  }) => {
+    const joined = (personalInfo[field] || []).join('\n');
+    const [value, setValue] = useState(joined);
 
-  const ArrayInput = ({ field, label, placeholder }: { field: keyof PersonalInfo, label: string, placeholder: string }) => {
-    const [inputValue, setInputValue] = React.useState('');
-    const currentArray = (personalInfo[field] as string[]) || [];
+    useEffect(() => {
+      setValue(joined);
+    }, [joined]);
 
-    const handleAdd = () => {
-      addToArray(field, inputValue);
-      setInputValue('');
+    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const newValue = e.target.value;
+      setValue(newValue);
+      updateField(field, newValue.split('\n'));
     };
 
     return (
       <div className="space-y-2">
-        <Label>{label}</Label>
-        <div className="flex space-x-2">
-          <Input
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder={placeholder}
-            onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
-          />
-          <Button type="button" onClick={handleAdd} size="sm">
-            <Plus className="w-4 h-4" />
-          </Button>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {currentArray.map((item, index) => (
-            <Badge key={index} variant="secondary" className="flex items-center gap-1">
-              {item}
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => removeFromArray(field, index)}
-                className="h-auto p-0 w-4 h-4"
-              >
-                <X className="w-3 h-3" />
-              </Button>
-            </Badge>
-          ))}
-        </div>
+        <Label htmlFor={field}>{label}</Label>
+        <Textarea
+          id={field}
+          value={value}
+          onChange={handleChange}
+          placeholder={placeholder}
+          rows={4}
+        />
       </div>
     );
+  };
+
+  const [loadingLinkedIn, setLoadingLinkedIn] = useState(false);
+
+  const handleLinkedInImport = async () => {
+    if (!personalInfo.linkedinUrl) return;
+    try {
+      setLoadingLinkedIn(true);
+
+      let profileId = '';
+      try {
+        const url = new URL(personalInfo.linkedinUrl);
+        const parts = url.pathname.split('/').filter(Boolean);
+        profileId = parts[0] || '';
+      } catch {
+        /* fall back to regex below */
+      }
+
+      if (!profileId) {
+        const match = personalInfo.linkedinUrl.match(/linkedin\.com\/in\/([^/?]+)/i);
+        if (match) profileId = match[1];
+      }
+
+      if (!profileId) {
+        toast({ title: 'URL inválida do LinkedIn' });
+        return;
+      }
+
+      profileId = encodeURIComponent(profileId.trim());
+
+      const urls = [
+        `https://r.jina.ai/https://www.linkedin.com/in/${profileId}`,
+        `https://r.jina.ai/http://www.linkedin.com/in/${profileId}`,
+        `https://r.jina.ai/https://linkedin.com/in/${profileId}`,
+      ];
+
+      let text = '';
+      for (const url of urls) {
+        try {
+          const res = await fetch(url);
+          if (res.ok) {
+            text = await res.text();
+            if (text) break;
+          }
+        } catch {
+          /* ignore and try next url */
+        }
+      }
+
+      if (!text) throw new Error('Dados não encontrados');
+
+      let fullName = personalInfo.fullName;
+      let headline = personalInfo.currentMotivation;
+      let location = personalInfo.currentLocation;
+
+      const ldMatch = text.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+      if (ldMatch) {
+        try {
+          const data = JSON.parse(ldMatch[1]);
+          fullName = fullName || data.name || '';
+          headline = headline || data.jobTitle || '';
+          location = location || data.address?.addressLocality || '';
+        } catch {
+          /* ignore json parse errors */
+        }
+      }
+
+      if (!fullName) {
+        const nameMatch = text.match(/<title>([^|<]+)\|/);
+        if (nameMatch) fullName = nameMatch[1].trim();
+      }
+      if (!headline) {
+        const headlineMatch = text.match(/"headline":"([^"]+)"/);
+        if (headlineMatch) headline = headlineMatch[1];
+      }
+      if (!location) {
+        const locationMatch = text.match(/"location":"([^"]+)"/);
+        if (locationMatch) location = locationMatch[1];
+      }
+
+      if (fullName) updateField('fullName', fullName);
+      if (headline) updateField('currentMotivation', headline);
+      if (location) updateField('currentLocation', location);
+
+      toast({ title: 'Dados do LinkedIn importados' });
+    } catch (e) {
+      console.error('Erro ao importar LinkedIn', e);
+      toast({
+        title: 'Erro ao importar LinkedIn',
+        description: 'Não foi possível obter os dados do perfil informado.'
+      });
+    } finally {
+      setLoadingLinkedIn(false);
+    }
   };
 
   return (
@@ -140,6 +222,21 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
             onChange={(e) => updateField('currentLocation', e.target.value)}
             placeholder="Ex: São Paulo, Brasil"
           />
+        </div>
+
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="linkedinUrl">LinkedIn</Label>
+          <div className="flex space-x-2">
+            <Input
+              id="linkedinUrl"
+              value={personalInfo.linkedinUrl}
+              onChange={(e) => updateField('linkedinUrl', e.target.value)}
+              placeholder="https://www.linkedin.com/in/seu-perfil"
+            />
+            <Button type="button" onClick={handleLinkedInImport} disabled={loadingLinkedIn || !personalInfo.linkedinUrl}>
+              {loadingLinkedIn ? 'Buscando...' : 'Importar'}
+            </Button>
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -194,13 +291,13 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
         </div>
       </div>
 
-      <ArrayInput field="preferredLocations" label="Locais Preferidos para Atuar" placeholder="Ex: Londres, Nova York" />
-      <ArrayInput field="languages" label="Idiomas" placeholder="Ex: Inglês fluente" />
-      <ArrayInput field="education" label="Formação Acadêmica" placeholder="Ex: MBA em Gestão" />
-      <ArrayInput field="certifications" label="Certificações" placeholder="Ex: PMP, Scrum Master" />
-      <ArrayInput field="previousRoles" label="Cargos Anteriores Relevantes" placeholder="Ex: Diretor de Marketing" />
-      <ArrayInput field="desiredRoles" label="Cargos Desejados" placeholder="Ex: Chief Innovation Officer" />
-      <ArrayInput field="workModels" label="Modelos de Trabalho Preferidos" placeholder="Ex: PJ, Consultoria" />
+      <ListTextarea field="preferredLocations" label="Locais Preferidos para Atuar" placeholder="Ex: Londres, Nova York" />
+      <ListTextarea field="languages" label="Idiomas" placeholder="Ex: Inglês fluente" />
+      <ListTextarea field="education" label="Formação Acadêmica" placeholder="Ex: MBA em Gestão" />
+      <ListTextarea field="certifications" label="Certificações" placeholder="Ex: PMP, Scrum Master" />
+      <ListTextarea field="previousRoles" label="Cargos Anteriores Relevantes" placeholder="Ex: Diretor de Marketing" />
+      <ListTextarea field="desiredRoles" label="Cargos Desejados" placeholder="Ex: Chief Innovation Officer" />
+      <ListTextarea field="workModels" label="Modelos de Trabalho Preferidos" placeholder="Ex: PJ, Consultoria" />
 
       <div className="space-y-2">
         <Label htmlFor="currentMotivation">Motivação Profissional Atual</Label>

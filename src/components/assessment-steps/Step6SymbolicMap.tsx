@@ -3,11 +3,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Moon, Sun, ArrowUp, Hash, Calendar } from 'lucide-react';
+import { Sun, Hash, Calendar } from 'lucide-react';
 import { SymbolicMap } from '@/types/assessment';
 
 interface Step6SymbolicMapProps {
-  data: { symbolicMap?: SymbolicMap };
+  data: { symbolicMap?: SymbolicMap; personalInfo?: { birthDate?: string } };
   onDataChange: (data: { symbolicMap: SymbolicMap }) => void;
 }
 
@@ -27,23 +27,40 @@ const lifeCycles = [
 ];
 
 const Step6SymbolicMap: React.FC<Step6SymbolicMapProps> = ({ data, onDataChange }) => {
-  const symbolicMap = data.symbolicMap || {
-    lifePathNumber: 0,
-    soulNumber: 0,
-    destinyNumber: 0,
-    sunSign: '',
-    moonSign: '',
-    ascendant: '',
-    currentLifeCycle: ''
-  };
+  const symbolicMap = React.useMemo(() => (
+    data.symbolicMap || {
+      lifePathNumber: 0,
+      soulNumber: 0,
+      destinyNumber: 0,
+      sunSign: '',
+      currentLifeCycle: ''
+    }
+  ), [data.symbolicMap]);
 
-  const updateField = (field: keyof SymbolicMap, value: any) => {
-    const updatedMap = { ...symbolicMap, [field]: value };
-    onDataChange({ symbolicMap: updatedMap });
+  const updateField = React.useCallback(
+    (field: keyof SymbolicMap, value: unknown) => {
+      onDataChange({ symbolicMap: { ...symbolicMap, [field]: value } });
+    },
+    [symbolicMap, onDataChange]
+  );
+
+  const getSunSign = (day: number, month: number): string => {
+    if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return 'Aquário';
+    if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) return 'Peixes';
+    if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return 'Áries';
+    if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return 'Touro';
+    if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return 'Gêmeos';
+    if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return 'Câncer';
+    if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return 'Leão';
+    if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return 'Virgem';
+    if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return 'Libra';
+    if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return 'Escorpião';
+    if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return 'Sagitário';
+    return 'Capricórnio';
   };
 
   // Helper function to calculate numerological numbers
-  const calculateFromDate = (birthDate: string) => {
+  const calculateFromDate = React.useCallback((birthDate: string) => {
     if (!birthDate) return;
     
     const [year, month, day] = birthDate.split('-').map(Number);
@@ -64,15 +81,19 @@ const Step6SymbolicMap: React.FC<Step6SymbolicMapProps> = ({ data, onDataChange 
     // Destiny Number (sum of complete date)
     const destinySum = sumAllDigits(parseInt(`${day}${month}${year}`));
     updateField('destinyNumber', destinySum);
-  };
+
+    if (!symbolicMap.sunSign) {
+      updateField('sunSign', getSunSign(day, month));
+    }
+  }, [updateField, symbolicMap.sunSign]);
 
   // Auto-calculate when there's a birth date in personal info
+  const birthDate = data.personalInfo?.birthDate;
   React.useEffect(() => {
-    const personalInfo = (data as any)?.personalInfo;
-    if (personalInfo?.birthDate) {
-      calculateFromDate(personalInfo.birthDate);
+    if (birthDate) {
+      calculateFromDate(birthDate);
     }
-  }, [(data as any)?.personalInfo?.birthDate]);
+  }, [birthDate, calculateFromDate]);
 
   return (
     <div className="space-y-6">
@@ -98,14 +119,11 @@ const Step6SymbolicMap: React.FC<Step6SymbolicMapProps> = ({ data, onDataChange 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label>Número do Caminho de Vida</Label>
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="number"
-                  value={symbolicMap.lifePathNumber || ''}
-                  onChange={(e) => updateField('lifePathNumber', parseInt(e.target.value) || 0)}
-                  placeholder="1-9, 11, 22, 33"
-                />
-              </div>
+              <Input
+                type="number"
+                value={symbolicMap.lifePathNumber || ''}
+                readOnly
+              />
               <p className="text-xs text-muted-foreground">
                 Soma reduzida da data completa de nascimento
               </p>
@@ -116,8 +134,7 @@ const Step6SymbolicMap: React.FC<Step6SymbolicMapProps> = ({ data, onDataChange 
               <Input
                 type="number"
                 value={symbolicMap.soulNumber || ''}
-                onChange={(e) => updateField('soulNumber', parseInt(e.target.value) || 0)}
-                placeholder="1-9"
+                readOnly
               />
               <p className="text-xs text-muted-foreground">
                 Dia do nascimento reduzido
@@ -129,8 +146,7 @@ const Step6SymbolicMap: React.FC<Step6SymbolicMapProps> = ({ data, onDataChange 
               <Input
                 type="number"
                 value={symbolicMap.destinyNumber || ''}
-                onChange={(e) => updateField('destinyNumber', parseInt(e.target.value) || 0)}
-                placeholder="1-9, 11, 22, 33"
+                readOnly
               />
               <p className="text-xs text-muted-foreground">
                 Soma completa da data de nascimento
@@ -152,66 +168,24 @@ const Step6SymbolicMap: React.FC<Step6SymbolicMapProps> = ({ data, onDataChange 
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label className="flex items-center">
-                <Sun className="w-4 h-4 mr-1 text-yellow-500" />
-                Signo Solar
-              </Label>
-              <Select value={symbolicMap.sunSign} onValueChange={(value) => updateField('sunSign', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent>
-                  {zodiacSigns.map(sign => (
-                    <SelectItem key={sign} value={sign}>{sign}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">
-                Personalidade consciente e propósito
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="flex items-center">
-                <Moon className="w-4 h-4 mr-1 text-blue-400" />
-                Signo Lunar
-              </Label>
-              <Select value={symbolicMap.moonSign} onValueChange={(value) => updateField('moonSign', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent>
-                  {zodiacSigns.map(sign => (
-                    <SelectItem key={sign} value={sign}>{sign}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">
-                Mundo emocional e necessidades
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="flex items-center">
-                <ArrowUp className="w-4 h-4 mr-1 text-primary" />
-                Ascendente
-              </Label>
-              <Select value={symbolicMap.ascendant} onValueChange={(value) => updateField('ascendant', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent>
-                  {zodiacSigns.map(sign => (
-                    <SelectItem key={sign} value={sign}>{sign}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">
-                Máscara social e primeiras impressões
-              </p>
-            </div>
+          <div className="space-y-2">
+            <Label className="flex items-center">
+              <Sun className="w-4 h-4 mr-1 text-yellow-500" />
+              Signo Solar
+            </Label>
+            <Select value={symbolicMap.sunSign} onValueChange={(value) => updateField('sunSign', value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
+              <SelectContent>
+                {zodiacSigns.map(sign => (
+                  <SelectItem key={sign} value={sign}>{sign}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              Personalidade consciente e propósito
+            </p>
           </div>
         </CardContent>
       </Card>

@@ -1,17 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AssessmentData } from '@/types/assessment';
 
+interface SavedAssessment {
+  id: number;
+  name: string;
+  date: string;
+  data: Partial<AssessmentData>;
+}
+
 const STORAGE_KEY = 'geniusMapAssessment';
+const HISTORY_KEY = 'geniusMapAnalyses';
 
 export const useAssessmentStorage = () => {
   const [assessmentData, setAssessmentData] = useState<Partial<AssessmentData>>({});
   const [currentStep, setCurrentStep] = useState(1);
+  const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Load data from localStorage on mount
   useEffect(() => {
     const savedData = localStorage.getItem(STORAGE_KEY);
     const savedStep = localStorage.getItem(`${STORAGE_KEY}_step`);
-    
+
     if (savedData) {
       try {
         setAssessmentData(JSON.parse(savedData));
@@ -19,17 +28,30 @@ export const useAssessmentStorage = () => {
         console.error('Error loading saved assessment data:', error);
       }
     }
-    
+
     if (savedStep) {
       setCurrentStep(parseInt(savedStep, 10));
     }
   }, []);
 
-  // Save data to localStorage whenever it changes
+  // Save data to localStorage with debounce to avoid UI lag
+  useEffect(() => {
+    if (saveTimeout.current) {
+      clearTimeout(saveTimeout.current);
+    }
+    saveTimeout.current = setTimeout(() => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(assessmentData));
+    }, 300);
+
+    return () => {
+      if (saveTimeout.current) {
+        clearTimeout(saveTimeout.current);
+      }
+    };
+  }, [assessmentData]);
+
   const updateAssessmentData = (newData: Partial<AssessmentData>) => {
-    const updatedData = { ...assessmentData, ...newData };
-    setAssessmentData(updatedData);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
+    setAssessmentData(prev => ({ ...prev, ...newData }));
   };
 
   // Save current step
@@ -40,6 +62,9 @@ export const useAssessmentStorage = () => {
 
   // Clear all data
   const clearAssessmentData = () => {
+    if (saveTimeout.current) {
+      clearTimeout(saveTimeout.current);
+    }
     setAssessmentData({});
     setCurrentStep(1);
     localStorage.removeItem(STORAGE_KEY);
@@ -52,7 +77,9 @@ export const useAssessmentStorage = () => {
       case 1:
         return !!(assessmentData.personalInfo?.fullName && assessmentData.personalInfo?.birthDate);
       case 2:
-        return !!(assessmentData.behavioralProfile?.mbti && assessmentData.behavioralProfile?.disc);
+        return !!(
+          assessmentData.behavioralProfile?.traitKeywords?.length
+        );
       case 3:
         return !!(assessmentData.talentsAndFlow?.flowMoments?.length);
       case 4:
@@ -80,6 +107,31 @@ export const useAssessmentStorage = () => {
     return Math.round((completedSteps / 10) * 100);
   };
 
+  const getAssessmentsHistory = (): SavedAssessment[] => {
+    const history = localStorage.getItem(HISTORY_KEY);
+    return history ? JSON.parse(history) : [];
+  };
+
+  const saveAssessmentToHistory = () => {
+    if (!assessmentData.personalInfo?.fullName) return;
+    const history = getAssessmentsHistory();
+    history.push({
+      id: Date.now(),
+      name: assessmentData.personalInfo.fullName,
+      date: new Date().toISOString(),
+      data: assessmentData,
+    });
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  };
+
+  const clearAssessmentsHistory = () => {
+    localStorage.removeItem(HISTORY_KEY);
+  };
+
+  const startNewAssessment = () => {
+    clearAssessmentData();
+  };
+
   return {
     assessmentData,
     currentStep,
@@ -88,5 +140,9 @@ export const useAssessmentStorage = () => {
     clearAssessmentData,
     isStepComplete,
     getCompletionPercentage,
+    getAssessmentsHistory,
+    saveAssessmentToHistory,
+    clearAssessmentsHistory,
+    startNewAssessment,
   };
 };

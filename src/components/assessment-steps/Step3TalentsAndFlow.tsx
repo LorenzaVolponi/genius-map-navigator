@@ -1,11 +1,7 @@
 import React from 'react';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { X, Plus } from 'lucide-react';
 import { TalentsAndFlow } from '@/types/assessment';
 
 interface Step3TalentsAndFlowProps {
@@ -26,74 +22,11 @@ const Step3TalentsAndFlow: React.FC<Step3TalentsAndFlowProps> = ({ data, onDataC
     preferredAction: 'create'
   };
 
-  const updateField = (field: keyof TalentsAndFlow, value: any) => {
+  const updateField = (field: keyof TalentsAndFlow, value: unknown) => {
     const updatedFlow = { ...talentsAndFlow, [field]: value };
     onDataChange({ talentsAndFlow: updatedFlow });
   };
 
-  const addToArray = (field: keyof TalentsAndFlow, value: string) => {
-    if (value.trim()) {
-      const currentArray = (talentsAndFlow[field] as string[]) || [];
-      const updatedArray = [...currentArray, value.trim()];
-      updateField(field, updatedArray);
-    }
-  };
-
-  const removeFromArray = (field: keyof TalentsAndFlow, index: number) => {
-    const currentArray = (talentsAndFlow[field] as string[]) || [];
-    const updatedArray = currentArray.filter((_, i) => i !== index);
-    updateField(field, updatedArray);
-  };
-
-  const ArrayInput = ({ field, label, placeholder, description }: { 
-    field: keyof TalentsAndFlow, 
-    label: string, 
-    placeholder: string,
-    description?: string 
-  }) => {
-    const [inputValue, setInputValue] = React.useState('');
-    const currentArray = (talentsAndFlow[field] as string[]) || [];
-
-    const handleAdd = () => {
-      addToArray(field, inputValue);
-      setInputValue('');
-    };
-
-    return (
-      <div className="space-y-2">
-        <Label>{label}</Label>
-        {description && <p className="text-xs text-muted-foreground">{description}</p>}
-        <div className="flex space-x-2">
-          <Textarea
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder={placeholder}
-            rows={2}
-            className="flex-1"
-          />
-          <Button type="button" onClick={handleAdd} size="sm" className="self-start">
-            <Plus className="w-4 h-4" />
-          </Button>
-        </div>
-        <div className="space-y-2">
-          {currentArray.map((item, index) => (
-            <div key={index} className="flex items-start space-x-2 p-3 bg-muted/50 rounded-lg">
-              <span className="flex-1 text-sm">{item}</span>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => removeFromArray(field, index)}
-                className="h-auto p-1"
-              >
-                <X className="w-3 h-3" />
-              </Button>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div className="space-y-6">
@@ -101,8 +34,8 @@ const Step3TalentsAndFlow: React.FC<Step3TalentsAndFlowProps> = ({ data, onDataC
         <Label className="text-base font-medium">1. Três momentos em que experimentou flow absoluto na carreira ou vida</Label>
         <p className="text-xs text-muted-foreground">Flow é o estado de total imersão e satisfação em uma atividade</p>
         <Textarea
-          value={talentsAndFlow.flowMoments.join('\n\n')}
-          onChange={(e) => updateField('flowMoments', e.target.value.split('\n\n').filter(s => s.trim()))}
+          value={talentsAndFlow.flowMoments.join('\n')}
+          onChange={(e) => updateField('flowMoments', e.target.value.split('\n').filter(s => s.trim()))}
           placeholder="Descreva situações específicas onde perdeu a noção do tempo, se sentiu completamente absorvido e teve alta performance..."
           rows={6}
         />
@@ -111,8 +44,8 @@ const Step3TalentsAndFlow: React.FC<Step3TalentsAndFlowProps> = ({ data, onDataC
       <div className="space-y-3">
         <Label className="text-base font-medium">2. Desafios que você ama resolver (mesmo quando evitados por outros)</Label>
         <Textarea
-          value={talentsAndFlow.challengesYouLove.join('\n\n')}
-          onChange={(e) => updateField('challengesYouLove', e.target.value.split('\n\n').filter(s => s.trim()))}
+          value={talentsAndFlow.challengesYouLove.join('\n')}
+          onChange={(e) => updateField('challengesYouLove', e.target.value.split('\n').filter(s => s.trim()))}
           placeholder="Ex: Transformar equipes desmotivadas, criar soluções para problemas complexos, mediar conflitos..."
           rows={4}
         />
@@ -121,8 +54,8 @@ const Step3TalentsAndFlow: React.FC<Step3TalentsAndFlowProps> = ({ data, onDataC
       <div className="space-y-3">
         <Label className="text-base font-medium">3. Tipo de elogio recorrente que recebe em sua potência máxima</Label>
         <Textarea
-          value={talentsAndFlow.recurringCompliments.join('\n\n')}
-          onChange={(e) => updateField('recurringCompliments', e.target.value.split('\n\n').filter(s => s.trim()))}
+          value={talentsAndFlow.recurringCompliments.join('\n')}
+          onChange={(e) => updateField('recurringCompliments', e.target.value.split('\n').filter(s => s.trim()))}
           placeholder="Ex: 'Você sempre vê soluções onde outros veem problemas', 'Sua capacidade de simplificar o complexo é incrível'..."
           rows={4}
         />
@@ -153,8 +86,8 @@ const Step3TalentsAndFlow: React.FC<Step3TalentsAndFlowProps> = ({ data, onDataC
       <div className="space-y-3">
         <Label className="text-base font-medium">6. Três momentos em que fez 'milagre acontecer' com poucos recursos</Label>
         <Textarea
-          value={talentsAndFlow.miracleMoments.join('\n\n')}
-          onChange={(e) => updateField('miracleMoments', e.target.value.split('\n\n').filter(s => s.trim()))}
+          value={talentsAndFlow.miracleMoments.join('\n')}
+          onChange={(e) => updateField('miracleMoments', e.target.value.split('\n').filter(s => s.trim()))}
           placeholder="Situações onde conseguiu resultados extraordinários mesmo com limitações de tempo, budget ou recursos..."
           rows={5}
         />
@@ -163,8 +96,8 @@ const Step3TalentsAndFlow: React.FC<Step3TalentsAndFlowProps> = ({ data, onDataC
       <div className="space-y-3">
         <Label className="text-base font-medium">7. Atividades que te animam mesmo quando está cansado(a)</Label>
         <Textarea
-          value={talentsAndFlow.energizingActivities.join('\n\n')}
-          onChange={(e) => updateField('energizingActivities', e.target.value.split('\n\n').filter(s => s.trim()))}
+          value={talentsAndFlow.energizingActivities.join('\n')}
+          onChange={(e) => updateField('energizingActivities', e.target.value.split('\n').filter(s => s.trim()))}
           placeholder="Ex: Brainstormings criativos, mentoria de pessoas, análise de dados, apresentações..."
           rows={4}
         />

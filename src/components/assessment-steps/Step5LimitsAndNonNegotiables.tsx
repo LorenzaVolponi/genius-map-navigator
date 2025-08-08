@@ -1,8 +1,7 @@
 import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { X, Plus, AlertTriangle, Shield, CheckCircle } from 'lucide-react';
+import { AlertTriangle, Shield, CheckCircle } from 'lucide-react';
 import { LimitsAndNonNegotiables } from '@/types/assessment';
 
 interface Step5LimitsAndNonNegotiablesProps {
@@ -20,48 +19,26 @@ const Step5LimitsAndNonNegotiables: React.FC<Step5LimitsAndNonNegotiablesProps> 
     idealProjects: []
   };
 
-  const updateField = (field: keyof LimitsAndNonNegotiables, value: any) => {
+  const updateField = (field: keyof LimitsAndNonNegotiables, value: unknown) => {
     const updatedLimits = { ...limitsAndNonNegotiables, [field]: value };
     onDataChange({ limitsAndNonNegotiables: updatedLimits });
   };
 
-  const addToArray = (field: keyof LimitsAndNonNegotiables, value: string) => {
-    if (value.trim()) {
-      const currentArray = (limitsAndNonNegotiables[field] as string[]) || [];
-      const updatedArray = [...currentArray, value.trim()];
-      updateField(field, updatedArray);
-    }
-  };
-
-  const removeFromArray = (field: keyof LimitsAndNonNegotiables, index: number) => {
-    const currentArray = (limitsAndNonNegotiables[field] as string[]) || [];
-    const updatedArray = currentArray.filter((_, i) => i !== index);
-    updateField(field, updatedArray);
-  };
-
-  const ArrayInput = ({ 
-    field, 
-    label, 
-    placeholder, 
-    description, 
+  const ArrayInput = ({
+    field,
+    label,
+    placeholder,
+    description,
     icon: Icon,
     variant = 'default'
-  }: { 
-    field: keyof LimitsAndNonNegotiables, 
-    label: string, 
+  }: {
+    field: keyof LimitsAndNonNegotiables,
+    label: string,
     placeholder: string,
     description?: string,
     icon: React.ElementType,
     variant?: 'default' | 'warning' | 'success'
   }) => {
-    const [inputValue, setInputValue] = React.useState('');
-    const currentArray = (limitsAndNonNegotiables[field] as string[]) || [];
-
-    const handleAdd = () => {
-      addToArray(field, inputValue);
-      setInputValue('');
-    };
-
     const getVariantStyles = () => {
       switch (variant) {
         case 'warning':
@@ -91,39 +68,15 @@ const Step5LimitsAndNonNegotiables: React.FC<Step5LimitsAndNonNegotiablesProps> 
           <Label className="text-base font-medium">{label}</Label>
         </div>
         {description && <p className="text-sm text-muted-foreground ml-7">{description}</p>}
-        
-        <div className="ml-7 space-y-3">
-          <div className="flex space-x-2">
-            <Textarea
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder={placeholder}
-              rows={2}
-              className="flex-1"
-            />
-            <Button type="button" onClick={handleAdd} size="sm" className="self-start">
-              <Plus className="w-4 h-4" />
-            </Button>
-          </div>
-          
-          <div className="space-y-2">
-            {currentArray.map((item, index) => (
-              <div key={index} className={`flex items-start space-x-2 p-3 bg-gradient-to-r rounded-lg border ${getVariantStyles()}`}>
-                <div className="flex-1">
-                  <p className="text-sm text-foreground">{item}</p>
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => removeFromArray(field, index)}
-                  className="h-auto p-1 text-muted-foreground hover:text-destructive"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
+
+        <div className="ml-7">
+          <Textarea
+            value={(limitsAndNonNegotiables[field] as string[]).join('\n')}
+            onChange={(e) => updateField(field, e.target.value.split('\n').filter(s => s.trim()))}
+            placeholder={placeholder}
+            rows={4}
+            className={`bg-gradient-to-r rounded-lg border ${getVariantStyles()}`}
+          />
         </div>
       </div>
     );

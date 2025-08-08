@@ -3,6 +3,7 @@ export interface PersonalInfo {
   birthDate: string;
   gender: string;
   currentLocation: string;
+  linkedinUrl: string;
   preferredLocations: string[];
   languages: string[];
   education: string[];
@@ -20,9 +21,7 @@ export interface PersonalInfo {
 }
 
 export interface BehavioralProfile {
-  mbti: string;
-  disc: string;
-  enneagram: string;
+  traitKeywords: string[];
   otherTests: string[];
   energizingSituations: string[];
   drainingsituations: string[];
@@ -64,8 +63,6 @@ export interface SymbolicMap {
   soulNumber: number;
   destinyNumber: number;
   sunSign: string;
-  moonSign: string;
-  ascendant: string;
   currentLifeCycle: string;
 }
 
@@ -78,8 +75,8 @@ export interface UnconsciousPatterns {
 }
 
 export interface StrategicPositioning {
-  areasOfInterest: string[];
-  preferredRole: string[];
+  areasOfInterest: string;
+  preferredRole: string;
   meaningfulWork: string;
   acceptableProjects: string[];
   rejectedProjects: string[];
@@ -136,6 +133,9 @@ export interface AnalysisResult {
   };
   riskFactors: string[];
   nextSteps: string[];
+  careerRoadmap: string[];
+  positioningStrategies: string[];
+  developmentPlan: string[];
 }
 
 export type ReportType = 'executive' | 'detailed' | 'strategic';

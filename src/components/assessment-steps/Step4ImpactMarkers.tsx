@@ -1,9 +1,7 @@
 import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { X, Plus, Award, Lightbulb, TrendingUp, Users, Building } from 'lucide-react';
+import { Award, Lightbulb, TrendingUp, Users, Building } from 'lucide-react';
 import { ImpactMarkers } from '@/types/assessment';
 
 interface Step4ImpactMarkersProps {
@@ -20,90 +18,41 @@ const Step4ImpactMarkers: React.FC<Step4ImpactMarkersProps> = ({ data, onDataCha
     peopleYouMentored: []
   };
 
-  const updateField = (field: keyof ImpactMarkers, value: any) => {
+  const updateField = (field: keyof ImpactMarkers, value: unknown) => {
     const updatedMarkers = { ...impactMarkers, [field]: value };
     onDataChange({ impactMarkers: updatedMarkers });
   };
 
-  const addToArray = (field: keyof ImpactMarkers, value: string) => {
-    if (value.trim()) {
-      const currentArray = (impactMarkers[field] as string[]) || [];
-      const updatedArray = [...currentArray, value.trim()];
-      updateField(field, updatedArray);
-    }
-  };
-
-  const removeFromArray = (field: keyof ImpactMarkers, index: number) => {
-    const currentArray = (impactMarkers[field] as string[]) || [];
-    const updatedArray = currentArray.filter((_, i) => i !== index);
-    updateField(field, updatedArray);
-  };
-
-  const ArrayInput = ({ 
-    field, 
-    label, 
-    placeholder, 
-    description, 
-    icon: Icon 
-  }: { 
-    field: keyof ImpactMarkers, 
-    label: string, 
+  const ArrayInput = ({
+    field,
+    label,
+    placeholder,
+    description,
+    icon: Icon
+  }: {
+    field: keyof ImpactMarkers,
+    label: string,
     placeholder: string,
     description?: string,
     icon: React.ElementType
-  }) => {
-    const [inputValue, setInputValue] = React.useState('');
-    const currentArray = (impactMarkers[field] as string[]) || [];
-
-    const handleAdd = () => {
-      addToArray(field, inputValue);
-      setInputValue('');
-    };
-
-    return (
-      <div className="space-y-3">
-        <div className="flex items-center space-x-2">
-          <Icon className="w-5 h-5 text-primary" />
-          <Label className="text-base font-medium">{label}</Label>
-        </div>
-        {description && <p className="text-sm text-muted-foreground ml-7">{description}</p>}
-        
-        <div className="ml-7 space-y-3">
-          <div className="flex space-x-2">
-            <Textarea
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder={placeholder}
-              rows={3}
-              className="flex-1"
-            />
-            <Button type="button" onClick={handleAdd} size="sm" className="self-start">
-              <Plus className="w-4 h-4" />
-            </Button>
-          </div>
-          
-          <div className="space-y-2">
-            {currentArray.map((item, index) => (
-              <div key={index} className="flex items-start space-x-2 p-4 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg border border-primary/10">
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground">{item}</p>
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => removeFromArray(field, index)}
-                  className="h-auto p-1 text-muted-foreground hover:text-destructive"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
-        </div>
+  }) => (
+    <div className="space-y-3">
+      <div className="flex items-center space-x-2">
+        <Icon className="w-5 h-5 text-primary" />
+        <Label className="text-base font-medium">{label}</Label>
       </div>
-    );
-  };
+      {description && <p className="text-sm text-muted-foreground ml-7">{description}</p>}
+
+      <div className="ml-7">
+        <Textarea
+          value={(impactMarkers[field] as string[]).join('\n')}
+          onChange={(e) => updateField(field, e.target.value.split('\n').filter(s => s.trim()))}
+          placeholder={placeholder}
+          rows={4}
+        />
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-8">

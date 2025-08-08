@@ -1,9 +1,7 @@
 import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
-import { X, Plus, Brain, Target, Lightbulb, TrendingUp } from 'lucide-react';
+import { Brain, Target, Lightbulb, TrendingUp, X } from 'lucide-react';
 import { StrategicPositioning } from '@/types/assessment';
 
 interface Step8StrategicPositioningProps {
@@ -11,136 +9,19 @@ interface Step8StrategicPositioningProps {
   onDataChange: (data: { strategicPositioning: StrategicPositioning }) => void;
 }
 
-const aiImpactAreas = [
-  'Estratégia de implementação de IA em organizações',
-  'Ética e governança de IA',
-  'IA aplicada à sustentabilidade e impacto social',
-  'Venture capital e investimentos em IA',
-  'Educação e capacitação em IA',
-  'IA para saúde e bem-estar',
-  'IA conversacional e experiência do usuário',
-  'IA para análise de dados e business intelligence',
-  'Automação inteligente de processos',
-  'IA para criação de conteúdo e marketing',
-  'Segurança e privacidade em IA',
-  'IA para recursos humanos e gestão de talentos'
-];
-
-const preferredRoles = [
-  'Estrategista',
-  'Executora',
-  'Curadora',
-  'Conselheira',
-  'Educadora',
-  'Consultora fractional',
-  'Venture Partner',
-  'Designer de produtos/protocolos de impacto',
-  'Innovation Manager',
-  'Chief AI Officer',
-  'Facilitadora de transformação',
-  'Pesquisadora aplicada'
-];
 
 const Step8StrategicPositioning: React.FC<Step8StrategicPositioningProps> = ({ data, onDataChange }) => {
   const strategicPositioning = data.strategicPositioning || {
-    areasOfInterest: [],
-    preferredRole: [],
+    areasOfInterest: '',
+    preferredRole: '',
     meaningfulWork: '',
     acceptableProjects: [],
     rejectedProjects: []
   };
 
-  const updateField = (field: keyof StrategicPositioning, value: any) => {
+  const updateField = (field: keyof StrategicPositioning, value: unknown) => {
     const updatedPositioning = { ...strategicPositioning, [field]: value };
     onDataChange({ strategicPositioning: updatedPositioning });
-  };
-
-  const toggleArrayItem = (field: keyof StrategicPositioning, item: string) => {
-    const currentArray = (strategicPositioning[field] as string[]) || [];
-    const updatedArray = currentArray.includes(item)
-      ? currentArray.filter(i => i !== item)
-      : [...currentArray, item];
-    updateField(field, updatedArray);
-  };
-
-  const addToArray = (field: keyof StrategicPositioning, value: string) => {
-    if (value.trim()) {
-      const currentArray = (strategicPositioning[field] as string[]) || [];
-      const updatedArray = [...currentArray, value.trim()];
-      updateField(field, updatedArray);
-    }
-  };
-
-  const removeFromArray = (field: keyof StrategicPositioning, index: number) => {
-    const currentArray = (strategicPositioning[field] as string[]) || [];
-    const updatedArray = currentArray.filter((_, i) => i !== index);
-    updateField(field, updatedArray);
-  };
-
-  const CustomArrayInput = ({ 
-    field, 
-    label, 
-    placeholder, 
-    description, 
-    icon: Icon
-  }: { 
-    field: keyof StrategicPositioning, 
-    label: string, 
-    placeholder: string,
-    description?: string,
-    icon: React.ElementType
-  }) => {
-    const [inputValue, setInputValue] = React.useState('');
-    const currentArray = (strategicPositioning[field] as string[]) || [];
-
-    const handleAdd = () => {
-      addToArray(field, inputValue);
-      setInputValue('');
-    };
-
-    return (
-      <div className="space-y-3">
-        <div className="flex items-center space-x-2">
-          <Icon className="w-5 h-5 text-primary" />
-          <Label className="text-base font-medium">{label}</Label>
-        </div>
-        {description && <p className="text-sm text-muted-foreground ml-7">{description}</p>}
-        
-        <div className="ml-7 space-y-3">
-          <div className="flex space-x-2">
-            <Textarea
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder={placeholder}
-              rows={2}
-              className="flex-1"
-            />
-            <Button type="button" onClick={handleAdd} size="sm" className="self-start">
-              <Plus className="w-4 h-4" />
-            </Button>
-          </div>
-          
-          <div className="space-y-2">
-            {currentArray.map((item, index) => (
-              <div key={index} className="flex items-start space-x-2 p-3 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg border border-primary/10">
-                <div className="flex-1">
-                  <p className="text-sm text-foreground">{item}</p>
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => removeFromArray(field, index)}
-                  className="h-auto p-1 text-muted-foreground hover:text-destructive"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
   };
 
   return (
@@ -161,18 +42,16 @@ const Step8StrategicPositioning: React.FC<Step8StrategicPositioningProps> = ({ d
           </Label>
         </div>
         <p className="text-sm text-muted-foreground ml-7">
-          Selecione todas as áreas que despertam seu interesse e expertise
+          Descreva as áreas que despertam seu interesse e expertise
         </p>
-        <div className="ml-7 grid grid-cols-1 md:grid-cols-2 gap-3">
-          {aiImpactAreas.map((area) => (
-            <div key={area} className="flex items-center space-x-2">
-              <Checkbox
-                checked={strategicPositioning.areasOfInterest.includes(area)}
-                onCheckedChange={() => toggleArrayItem('areasOfInterest', area)}
-              />
-              <Label className="text-sm cursor-pointer">{area}</Label>
-            </div>
-          ))}
+
+        <div className="ml-7">
+          <Textarea
+            value={strategicPositioning.areasOfInterest}
+            onChange={(e) => updateField('areasOfInterest', e.target.value)}
+            placeholder="Ex: Ética e governança de IA... Automação inteligente de processos..."
+            rows={5}
+          />
         </div>
       </div>
 
@@ -185,18 +64,16 @@ const Step8StrategicPositioning: React.FC<Step8StrategicPositioningProps> = ({ d
           </Label>
         </div>
         <p className="text-sm text-muted-foreground ml-7">
-          Selecione os papéis profissionais que mais se alinham com sua forma de trabalhar
+          Liste os papéis profissionais que mais se alinham com sua forma de trabalhar
         </p>
-        <div className="ml-7 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {preferredRoles.map((role) => (
-            <div key={role} className="flex items-center space-x-2">
-              <Checkbox
-                checked={strategicPositioning.preferredRole.includes(role)}
-                onCheckedChange={() => toggleArrayItem('preferredRole', role)}
-              />
-              <Label className="text-sm cursor-pointer">{role}</Label>
-            </div>
-          ))}
+
+        <div className="ml-7">
+          <Textarea
+            value={strategicPositioning.preferredRole}
+            onChange={(e) => updateField('preferredRole', e.target.value)}
+            placeholder="Ex: Estrategista, consultora fractional, facilitadora de transformação..."
+            rows={4}
+          />
         </div>
       </div>
 
@@ -232,8 +109,8 @@ const Step8StrategicPositioning: React.FC<Step8StrategicPositioningProps> = ({ d
         
         <div className="ml-7">
           <Textarea
-            value={strategicPositioning.acceptableProjects.join('\n\n')}
-            onChange={(e) => updateField('acceptableProjects', e.target.value.split('\n\n').filter(s => s.trim()))}
+            value={strategicPositioning.acceptableProjects.join('\n')}
+            onChange={(e) => updateField('acceptableProjects', e.target.value.split('\n').filter(s => s.trim()))}
             placeholder="Ex: Liderar a estratégia de IA de uma startup de impacto social... Criar um programa de educação em IA para comunidades underserved... Desenvolver protocolos éticos para uso de IA em saúde mental..."
             rows={5}
             className="bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/10"
@@ -250,8 +127,8 @@ const Step8StrategicPositioning: React.FC<Step8StrategicPositioningProps> = ({ d
         
         <div className="ml-7">
           <Textarea
-            value={strategicPositioning.rejectedProjects.join('\n\n')}
-            onChange={(e) => updateField('rejectedProjects', e.target.value.split('\n\n').filter(s => s.trim()))}
+            value={strategicPositioning.rejectedProjects.join('\n')}
+            onChange={(e) => updateField('rejectedProjects', e.target.value.split('\n').filter(s => s.trim()))}
             placeholder="Ex: Implementação de IA para vigilância sem transparência... Projetos que priorizam lucro sobre impacto social... Desenvolvimento de IA para manipulação de comportamento do consumidor..."
             rows={5}
             className="bg-gradient-to-r from-destructive/5 to-warning/5 border-destructive/10"
