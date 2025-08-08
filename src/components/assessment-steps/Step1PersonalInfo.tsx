@@ -192,6 +192,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
             autoComplete="name"
             value={personalInfo.fullName}
             onChange={(e) => updateField('fullName', e.target.value)}
+            onBlur={(e) => updateField('fullName', e.target.value.trim())}
             placeholder="Digite seu nome completo"
           />
         </div>
@@ -230,6 +231,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
             autoComplete="address-level2"
             value={personalInfo.currentLocation}
             onChange={(e) => updateField('currentLocation', e.target.value)}
+            onBlur={(e) => updateField('currentLocation', e.target.value.trim())}
             placeholder="Ex: São Paulo, Brasil"
           />
         </div>
@@ -243,6 +245,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
               autoComplete="url"
               value={personalInfo.linkedinUrl}
               onChange={(e) => updateField('linkedinUrl', e.target.value)}
+              onBlur={(e) => updateField('linkedinUrl', e.target.value.trim())}
               placeholder="https://www.linkedin.com/in/seu-perfil"
             />
             <Button type="button" onClick={handleLinkedInImport} disabled={loadingLinkedIn || !personalInfo.linkedinUrl}>
@@ -271,6 +274,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
             id="availability"
             value={personalInfo.availability}
             onChange={(e) => updateField('availability', e.target.value)}
+            onBlur={(e) => updateField('availability', e.target.value.trim())}
             placeholder="Ex: 40h/semana, meio período, etc."
           />
         </div>
@@ -298,6 +302,12 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
               inputMode="decimal"
               value={personalInfo.salaryExpectation.amount}
               onChange={(e) => updateField('salaryExpectation', { ...personalInfo.salaryExpectation, amount: e.target.value })}
+              onBlur={(e) =>
+                updateField('salaryExpectation', {
+                  ...personalInfo.salaryExpectation,
+                  amount: e.target.value.trim(),
+                })
+              }
               placeholder="Ex: 10.000"
               className="flex-1"
             />
@@ -319,6 +329,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
           id="currentMotivation"
           value={personalInfo.currentMotivation}
           onChange={(e) => updateField('currentMotivation', e.target.value)}
+          onBlur={(e) => updateField('currentMotivation', e.target.value.trim())}
           placeholder="Descreva o que te motiva profissionalmente no momento atual..."
           rows={4}
         />
