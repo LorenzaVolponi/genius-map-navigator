@@ -12,30 +12,40 @@ interface Step1PersonalInfoProps {
   onDataChange: (data: { personalInfo: PersonalInfo }) => void;
 }
 
+const defaultInfo: PersonalInfo = {
+  fullName: '',
+  birthDate: '',
+  gender: '',
+  currentLocation: '',
+  linkedinUrl: '',
+  preferredLocations: [],
+  languages: [],
+  education: [],
+  certifications: [],
+  previousRoles: [],
+  desiredRoles: [],
+  workModels: [],
+  workPreference: 'remote',
+  salaryExpectation: { currency: 'BRL', amount: '' },
+  availability: '',
+  currentMotivation: '',
+};
+
 const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChange }) => {
-  const personalInfo = data.personalInfo || {
-    fullName: '',
-    birthDate: '',
-    gender: '',
-    currentLocation: '',
-    linkedinUrl: '',
-    preferredLocations: [],
-    languages: [],
-    education: [],
-    certifications: [],
-    previousRoles: [],
-    desiredRoles: [],
-    workModels: [],
-    workPreference: 'remote',
-    salaryExpectation: { currency: 'BRL', amount: '' },
-    availability: '',
-    currentMotivation: ''
-  };
+  const [info, setInfo] = useState<PersonalInfo>(data.personalInfo || defaultInfo);
+
+  useEffect(() => {
+    setInfo(data.personalInfo || defaultInfo);
+  }, [data.personalInfo]);
 
   const updateField = useCallback(<K extends keyof PersonalInfo>(field: K, value: PersonalInfo[K]) => {
-    const updatedInfo: PersonalInfo = { ...personalInfo, [field]: value };
-    onDataChange({ personalInfo: updatedInfo });
-  }, [personalInfo, onDataChange]);
+    setInfo(prev => ({ ...prev, [field]: value }));
+  }, []);
+
+  useEffect(() => {
+    const id = setTimeout(() => onDataChange({ personalInfo: info }), 300);
+    return () => clearTimeout(id);
+  }, [info, onDataChange]);
 
   type ArrayField =
     | 'preferredLocations'
@@ -55,7 +65,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     label: string;
     placeholder: string;
   }) => {
-    const joined = (personalInfo[field] || []).join('\n');
+    const joined = (info[field] || []).join('\n');
     const [value, setValue] = useState(joined);
 
     useEffect(() => {
@@ -89,13 +99,13 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
   const [loadingLinkedIn, setLoadingLinkedIn] = useState(false);
 
   const handleLinkedInImport = async () => {
-    if (!personalInfo.linkedinUrl) return;
+    if (!info.linkedinUrl) return;
     try {
       setLoadingLinkedIn(true);
 
       let profileId = '';
       try {
-        const url = new URL(personalInfo.linkedinUrl);
+        const url = new URL(info.linkedinUrl);
         const parts = url.pathname.split('/').filter(Boolean);
         profileId = parts[0] || '';
       } catch {
@@ -103,7 +113,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
       }
 
       if (!profileId) {
-        const match = personalInfo.linkedinUrl.match(/linkedin\.com\/in\/([^/?]+)/i);
+        const match = info.linkedinUrl.match(/linkedin\.com\/in\/([^/?]+)/i);
         if (match) profileId = match[1];
       }
 
@@ -120,24 +130,26 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
         `https://r.jina.ai/https://linkedin.com/in/${profileId}`,
       ];
 
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
+      const responses = await Promise.all(
+        urls.map((url) => fetch(url, { signal: controller.signal }).catch(() => null))
+      );
+      clearTimeout(timeout);
+
       let text = '';
-      for (const url of urls) {
-        try {
-          const res = await fetch(url);
-          if (res.ok) {
-            text = await res.text();
-            if (text) break;
-          }
-        } catch {
-          /* ignore and try next url */
+      for (const res of responses) {
+        if (res && res.ok) {
+          text = await res.text();
+          if (text) break;
         }
       }
 
       if (!text) throw new Error('Dados não encontrados');
 
-      let fullName = personalInfo.fullName;
-      let headline = personalInfo.currentMotivation;
-      let location = personalInfo.currentLocation;
+      let fullName = info.fullName;
+      let headline = info.currentMotivation;
+      let location = info.currentLocation;
 
       const ldMatch = text.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
       if (ldMatch) {
@@ -190,7 +202,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
             autoFocus
             required
             autoComplete="name"
-            value={personalInfo.fullName}
+            value={info.fullName}
             onChange={(e) => updateField('fullName', e.target.value)}
             onBlur={(e) => updateField('fullName', e.target.value.trim())}
             placeholder="Digite seu nome completo"
@@ -204,14 +216,14 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
             type="date"
             required
             autoComplete="bday"
-            value={personalInfo.birthDate}
+              value={info.birthDate}
             onChange={(e) => updateField('birthDate', e.target.value)}
           />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="gender">Gênero</Label>
-          <Select value={personalInfo.gender} onValueChange={(value) => updateField('gender', value)}>
+          <Select value={info.gender} onValueChange={(value) => updateField('gender', value)}>
             <SelectTrigger>
               <SelectValue placeholder="Selecione" />
             </SelectTrigger>
@@ -229,7 +241,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
           <Input
             id="currentLocation"
             autoComplete="address-level2"
-            value={personalInfo.currentLocation}
+            value={info.currentLocation}
             onChange={(e) => updateField('currentLocation', e.target.value)}
             onBlur={(e) => updateField('currentLocation', e.target.value.trim())}
             placeholder="Ex: São Paulo, Brasil"
@@ -243,12 +255,12 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
               id="linkedinUrl"
               type="url"
               autoComplete="url"
-              value={personalInfo.linkedinUrl}
-              onChange={(e) => updateField('linkedinUrl', e.target.value)}
-              onBlur={(e) => updateField('linkedinUrl', e.target.value.trim())}
+                value={info.linkedinUrl}
+                onChange={(e) => updateField('linkedinUrl', e.target.value)}
+                onBlur={(e) => updateField('linkedinUrl', e.target.value.trim())}
               placeholder="https://www.linkedin.com/in/seu-perfil"
             />
-            <Button type="button" onClick={handleLinkedInImport} disabled={loadingLinkedIn || !personalInfo.linkedinUrl}>
+            <Button type="button" onClick={handleLinkedInImport} disabled={loadingLinkedIn || !info.linkedinUrl}>
               {loadingLinkedIn ? 'Buscando...' : 'Importar'}
             </Button>
           </div>
@@ -256,7 +268,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
 
         <div className="space-y-2">
           <Label htmlFor="workPreference">Preferência de Trabalho</Label>
-          <Select value={personalInfo.workPreference} onValueChange={(value) => updateField('workPreference', value)}>
+          <Select value={info.workPreference} onValueChange={(value) => updateField('workPreference', value)}>
             <SelectTrigger>
               <SelectValue placeholder="Selecione" />
             </SelectTrigger>
@@ -272,7 +284,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
           <Label htmlFor="availability">Disponibilidade Ideal</Label>
           <Input
             id="availability"
-            value={personalInfo.availability}
+            value={info.availability}
             onChange={(e) => updateField('availability', e.target.value)}
             onBlur={(e) => updateField('availability', e.target.value.trim())}
             placeholder="Ex: 40h/semana, meio período, etc."
@@ -285,8 +297,8 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
           <Label>Expectativa Salarial</Label>
           <div className="flex space-x-2">
             <Select 
-              value={personalInfo.salaryExpectation.currency} 
-              onValueChange={(value) => updateField('salaryExpectation', { ...personalInfo.salaryExpectation, currency: value })}
+              value={info.salaryExpectation.currency}
+              onValueChange={(value) => updateField('salaryExpectation', { ...info.salaryExpectation, currency: value })}
             >
               <SelectTrigger className="w-24">
                 <SelectValue />
@@ -300,11 +312,11 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
             <Input
               type="number"
               inputMode="decimal"
-              value={personalInfo.salaryExpectation.amount}
-              onChange={(e) => updateField('salaryExpectation', { ...personalInfo.salaryExpectation, amount: e.target.value })}
+              value={info.salaryExpectation.amount}
+              onChange={(e) => updateField('salaryExpectation', { ...info.salaryExpectation, amount: e.target.value })}
               onBlur={(e) =>
                 updateField('salaryExpectation', {
-                  ...personalInfo.salaryExpectation,
+                  ...info.salaryExpectation,
                   amount: e.target.value.trim(),
                 })
               }
@@ -325,14 +337,14 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
 
       <div className="space-y-2">
         <Label htmlFor="currentMotivation">Motivação Profissional Atual</Label>
-        <Textarea
-          id="currentMotivation"
-          value={personalInfo.currentMotivation}
-          onChange={(e) => updateField('currentMotivation', e.target.value)}
-          onBlur={(e) => updateField('currentMotivation', e.target.value.trim())}
-          placeholder="Descreva o que te motiva profissionalmente no momento atual..."
-          rows={4}
-        />
+          <Textarea
+            id="currentMotivation"
+            value={info.currentMotivation}
+            onChange={(e) => updateField('currentMotivation', e.target.value)}
+            onBlur={(e) => updateField('currentMotivation', e.target.value.trim())}
+            placeholder="Descreva o que te motiva profissionalmente no momento atual..."
+            rows={4}
+          />
       </div>
     </div>
   );
