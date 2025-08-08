@@ -53,11 +53,13 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
 
   const ArrayInput = ({ field, label, placeholder }: { field: keyof PersonalInfo, label: string, placeholder: string }) => {
     const [inputValue, setInputValue] = React.useState('');
+    const inputRef = React.useRef<HTMLInputElement>(null);
     const currentArray = (personalInfo[field] as string[]) || [];
 
     const handleAdd = () => {
       addToArray(field, inputValue);
       setInputValue('');
+      inputRef.current?.focus();
     };
 
     return (
@@ -65,9 +67,11 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
         <Label>{label}</Label>
         <div className="flex space-x-2">
           <Input
+            ref={inputRef}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder={placeholder}
+            autoComplete="off"
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
