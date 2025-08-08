@@ -77,8 +77,25 @@ export const useAssessmentStorage = () => {
   // Save current step
   const updateCurrentStep = (step: number) => {
     setCurrentStep(step);
+
+    const save = () => {
+      if (typeof window === 'undefined') return;
+      try {
+        window.localStorage.setItem(`${STORAGE_KEY}_step`, step.toString());
+      } catch (error) {
+        console.error('Error saving current step:', error);
+      }
+    };
+
     if (typeof window !== 'undefined') {
-      window.localStorage.setItem(`${STORAGE_KEY}_step`, step.toString());
+      const w = window as Window & {
+        requestIdleCallback?: (callback: () => void) => void;
+      };
+      if (w.requestIdleCallback) {
+        w.requestIdleCallback(save);
+      } else {
+        setTimeout(save, 0);
+      }
     }
   };
 
