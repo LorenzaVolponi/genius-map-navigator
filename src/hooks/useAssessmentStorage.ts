@@ -4,14 +4,16 @@ import { AssessmentData } from '@/types/assessment';
 const STORAGE_KEY = 'geniusMapAssessment';
 
 export const useAssessmentStorage = () => {
+  const isBrowser = typeof window !== 'undefined';
   const [assessmentData, setAssessmentData] = useState<Partial<AssessmentData>>({});
   const [currentStep, setCurrentStep] = useState(1);
 
   // Load data from localStorage on mount
   useEffect(() => {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    const savedStep = localStorage.getItem(`${STORAGE_KEY}_step`);
-    
+    if (!isBrowser) return;
+    const savedData = window.localStorage.getItem(STORAGE_KEY);
+    const savedStep = window.localStorage.getItem(`${STORAGE_KEY}_step`);
+
     if (savedData) {
       try {
         setAssessmentData(JSON.parse(savedData));
@@ -19,11 +21,11 @@ export const useAssessmentStorage = () => {
         console.error('Error loading saved assessment data:', error);
       }
     }
-    
+
     if (savedStep) {
       setCurrentStep(parseInt(savedStep, 10));
     }
-  }, []);
+  }, [isBrowser]);
 
   // Save data to state and persist to localStorage with a small debounce
   const updateAssessmentData = (newData: Partial<AssessmentData>) => {
@@ -31,29 +33,34 @@ export const useAssessmentStorage = () => {
   };
 
   useEffect(() => {
-    const handler = setTimeout(() => {
+    if (!isBrowser) return;
+    const handler = window.setTimeout(() => {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(assessmentData));
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(assessmentData));
       } catch (error) {
         console.error('Error saving assessment data:', error);
       }
     }, 500);
 
-    return () => clearTimeout(handler);
-  }, [assessmentData]);
+    return () => window.clearTimeout(handler);
+  }, [assessmentData, isBrowser]);
 
   // Save current step
   const updateCurrentStep = (step: number) => {
     setCurrentStep(step);
-    localStorage.setItem(`${STORAGE_KEY}_step`, step.toString());
+    if (isBrowser) {
+      window.localStorage.setItem(`${STORAGE_KEY}_step`, step.toString());
+    }
   };
 
   // Clear all data
   const clearAssessmentData = () => {
     setAssessmentData({});
     setCurrentStep(1);
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(`${STORAGE_KEY}_step`);
+    if (isBrowser) {
+      window.localStorage.removeItem(STORAGE_KEY);
+      window.localStorage.removeItem(`${STORAGE_KEY}_step`);
+    }
   };
 
   // Check if data is complete

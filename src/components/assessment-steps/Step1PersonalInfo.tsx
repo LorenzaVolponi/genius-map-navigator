@@ -32,23 +32,23 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     currentMotivation: ''
   };
 
-  const updateField = (field: keyof PersonalInfo, value: any) => {
-    const updatedInfo = { ...personalInfo, [field]: value };
+  const updateField = <K extends keyof PersonalInfo>(field: K, value: PersonalInfo[K]) => {
+    const updatedInfo: PersonalInfo = { ...personalInfo, [field]: value } as PersonalInfo;
     onDataChange({ personalInfo: updatedInfo });
   };
 
-  const addToArray = (field: keyof PersonalInfo, value: string) => {
+  const addToArray = <K extends keyof PersonalInfo>(field: K, value: string) => {
     if (value.trim()) {
       const currentArray = (personalInfo[field] as string[]) || [];
       const updatedArray = [...currentArray, value.trim()];
-      updateField(field, updatedArray);
+      updateField(field, updatedArray as PersonalInfo[K]);
     }
   };
 
-  const removeFromArray = (field: keyof PersonalInfo, index: number) => {
+  const removeFromArray = <K extends keyof PersonalInfo>(field: K, index: number) => {
     const currentArray = (personalInfo[field] as string[]) || [];
     const updatedArray = currentArray.filter((_, i) => i !== index);
-    updateField(field, updatedArray);
+    updateField(field, updatedArray as PersonalInfo[K]);
   };
 
   const ArrayInput = ({ field, label, placeholder }: { field: keyof PersonalInfo, label: string, placeholder: string }) => {
