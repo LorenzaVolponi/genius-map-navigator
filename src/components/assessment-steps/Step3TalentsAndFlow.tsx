@@ -26,7 +26,10 @@ const Step3TalentsAndFlow: React.FC<Step3TalentsAndFlowProps> = ({ data, onDataC
     preferredAction: 'create'
   };
 
-  const updateField = (field: keyof TalentsAndFlow, value: any) => {
+  const updateField = (
+    field: keyof TalentsAndFlow,
+    value: TalentsAndFlow[keyof TalentsAndFlow]
+  ) => {
     const updatedFlow = { ...talentsAndFlow, [field]: value };
     onDataChange({ talentsAndFlow: updatedFlow });
   };
