@@ -19,7 +19,10 @@ const Step7UnconsciousPatterns: React.FC<Step7UnconsciousPatternsProps> = ({ dat
     higherMission: ''
   };
 
-  const updateField = (field: keyof UnconsciousPatterns, value: any) => {
+  const updateField = (
+    field: keyof UnconsciousPatterns,
+    value: UnconsciousPatterns[keyof UnconsciousPatterns]
+  ) => {
     const updatedPatterns = { ...unconsciousPatterns, [field]: value };
     onDataChange({ unconsciousPatterns: updatedPatterns });
   };

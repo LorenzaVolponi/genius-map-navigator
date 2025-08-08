@@ -32,7 +32,10 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     currentMotivation: ''
   };
 
-  const updateField = (field: keyof PersonalInfo, value: any) => {
+  const updateField = (
+    field: keyof PersonalInfo,
+    value: PersonalInfo[keyof PersonalInfo]
+  ) => {
     const updatedInfo = { ...personalInfo, [field]: value };
     onDataChange({ personalInfo: updatedInfo });
   };

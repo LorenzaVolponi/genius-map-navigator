@@ -50,7 +50,10 @@ const Step8StrategicPositioning: React.FC<Step8StrategicPositioningProps> = ({ d
     rejectedProjects: []
   };
 
-  const updateField = (field: keyof StrategicPositioning, value: any) => {
+  const updateField = (
+    field: keyof StrategicPositioning,
+    value: StrategicPositioning[keyof StrategicPositioning]
+  ) => {
     const updatedPositioning = { ...strategicPositioning, [field]: value };
     onDataChange({ strategicPositioning: updatedPositioning });
   };

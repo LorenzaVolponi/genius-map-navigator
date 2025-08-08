@@ -24,7 +24,10 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
     limitingEnvironments: []
   };
 
-  const updateField = (field: keyof BehavioralProfile, value: any) => {
+  const updateField = (
+    field: keyof BehavioralProfile,
+    value: BehavioralProfile[keyof BehavioralProfile]
+  ) => {
     const updatedProfile = { ...behavioralProfile, [field]: value };
     onDataChange({ behavioralProfile: updatedProfile });
   };
