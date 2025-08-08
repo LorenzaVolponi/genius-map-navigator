@@ -34,13 +34,33 @@ export const useAssessmentStorage = () => {
     }
   }, []);
 
-  // Save data to localStorage with debounce to avoid UI lag
+  // Save data to localStorage with debounce and idle callback to avoid UI lag
   useEffect(() => {
     if (saveTimeout.current) {
       clearTimeout(saveTimeout.current);
     }
+
     saveTimeout.current = setTimeout(() => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(assessmentData));
+      const save = () => {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(assessmentData));
+        } catch (error) {
+          console.error('Error saving assessment data:', error);
+        }
+      };
+
+      if (typeof window !== 'undefined') {
+        const w = window as Window & {
+          requestIdleCallback?: (callback: () => void) => void;
+        };
+        if (w.requestIdleCallback) {
+          w.requestIdleCallback(save);
+        } else {
+          setTimeout(save, 0);
+        }
+      } else {
+        save();
+      }
     }, 300);
 
     return () => {

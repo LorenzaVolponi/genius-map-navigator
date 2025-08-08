@@ -183,6 +183,9 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
           <Label htmlFor="fullName">Nome Completo *</Label>
           <Input
             id="fullName"
+            autoFocus
+            required
+            autoComplete="name"
             value={personalInfo.fullName}
             onChange={(e) => updateField('fullName', e.target.value)}
             placeholder="Digite seu nome completo"
@@ -194,6 +197,8 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
           <Input
             id="birthDate"
             type="date"
+            required
+            autoComplete="bday"
             value={personalInfo.birthDate}
             onChange={(e) => updateField('birthDate', e.target.value)}
           />
@@ -218,6 +223,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
           <Label htmlFor="currentLocation">Localização Atual</Label>
           <Input
             id="currentLocation"
+            autoComplete="address-level2"
             value={personalInfo.currentLocation}
             onChange={(e) => updateField('currentLocation', e.target.value)}
             placeholder="Ex: São Paulo, Brasil"
@@ -229,6 +235,8 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
           <div className="flex space-x-2">
             <Input
               id="linkedinUrl"
+              type="url"
+              autoComplete="url"
               value={personalInfo.linkedinUrl}
               onChange={(e) => updateField('linkedinUrl', e.target.value)}
               placeholder="https://www.linkedin.com/in/seu-perfil"
@@ -282,6 +290,8 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
               </SelectContent>
             </Select>
             <Input
+              type="number"
+              inputMode="decimal"
               value={personalInfo.salaryExpectation.amount}
               onChange={(e) => updateField('salaryExpectation', { ...personalInfo.salaryExpectation, amount: e.target.value })}
               placeholder="Ex: 10.000"
