@@ -56,45 +56,30 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     | 'desiredRoles'
     | 'workModels';
 
-  const ListTextarea = ({
-    field,
-    label,
-    placeholder,
-  }: {
-    field: ArrayField;
-    label: string;
-    placeholder: string;
-  }) => {
-    const joined = (info[field] || []).join('\n');
-    const [value, setValue] = useState(joined);
-
-    useEffect(() => {
-      setValue(joined);
-    }, [joined]);
-
-    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const newValue = e.target.value;
-      setValue(newValue);
-      const values = newValue
-        .split('\n')
-        .map((v) => v.trim())
-        .filter(Boolean);
-      updateField(field, values as PersonalInfo[ArrayField]);
-    };
-
-    return (
-      <div className="space-y-2">
-        <Label htmlFor={field}>{label}</Label>
-        <Textarea
-          id={field}
-          value={value}
-          onChange={handleChange}
-          placeholder={placeholder}
-          rows={4}
-        />
-      </div>
-    );
-  };
+  const renderListTextarea = (
+    field: ArrayField,
+    label: string,
+    placeholder: string,
+  ) => (
+    <div className="space-y-2">
+      <Label htmlFor={field}>{label}</Label>
+      <Textarea
+        id={field}
+        value={(info[field] || []).join('\n')}
+        onChange={(e) =>
+          updateField(
+            field,
+            e.target.value
+              .split('\n')
+              .map((v) => v.trim())
+              .filter(Boolean) as PersonalInfo[ArrayField],
+          )
+        }
+        placeholder={placeholder}
+        rows={4}
+      />
+    </div>
+  );
 
   const [loadingLinkedIn, setLoadingLinkedIn] = useState(false);
 
@@ -211,14 +196,14 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
 
         <div className="space-y-2">
           <Label htmlFor="birthDate">Data de Nascimento *</Label>
-          <Input
-            id="birthDate"
-            type="date"
-            required
-            autoComplete="bday"
+            <Input
+              id="birthDate"
+              type="date"
+              required
+              autoComplete="bday"
               value={info.birthDate}
-            onChange={(e) => updateField('birthDate', e.target.value)}
-          />
+              onChange={(e) => updateField('birthDate', e.target.value)}
+            />
         </div>
 
         <div className="space-y-2">
@@ -255,9 +240,9 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
               id="linkedinUrl"
               type="url"
               autoComplete="url"
-                value={info.linkedinUrl}
-                onChange={(e) => updateField('linkedinUrl', e.target.value)}
-                onBlur={(e) => updateField('linkedinUrl', e.target.value.trim())}
+              value={info.linkedinUrl}
+              onChange={(e) => updateField('linkedinUrl', e.target.value)}
+              onBlur={(e) => updateField('linkedinUrl', e.target.value.trim())}
               placeholder="https://www.linkedin.com/in/seu-perfil"
             />
             <Button type="button" onClick={handleLinkedInImport} disabled={loadingLinkedIn || !info.linkedinUrl}>
@@ -327,16 +312,16 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
         </div>
       </div>
 
-      <ListTextarea field="preferredLocations" label="Locais Preferidos para Atuar" placeholder="Ex: Londres, Nova York" />
-      <ListTextarea field="languages" label="Idiomas" placeholder="Ex: Inglês fluente" />
-      <ListTextarea field="education" label="Formação Acadêmica" placeholder="Ex: MBA em Gestão" />
-      <ListTextarea field="certifications" label="Certificações" placeholder="Ex: PMP, Scrum Master" />
-      <ListTextarea field="previousRoles" label="Cargos Anteriores Relevantes" placeholder="Ex: Diretor de Marketing" />
-      <ListTextarea field="desiredRoles" label="Cargos Desejados" placeholder="Ex: Chief Innovation Officer" />
-      <ListTextarea field="workModels" label="Modelos de Trabalho Preferidos" placeholder="Ex: PJ, Consultoria" />
+      {renderListTextarea('preferredLocations', 'Locais Preferidos para Atuar', 'Ex: Londres, Nova York')}
+      {renderListTextarea('languages', 'Idiomas', 'Ex: Inglês fluente')}
+      {renderListTextarea('education', 'Formação Acadêmica', 'Ex: MBA em Gestão')}
+      {renderListTextarea('certifications', 'Certificações', 'Ex: PMP, Scrum Master')}
+      {renderListTextarea('previousRoles', 'Cargos Anteriores Relevantes', 'Ex: Diretor de Marketing')}
+      {renderListTextarea('desiredRoles', 'Cargos Desejados', 'Ex: Chief Innovation Officer')}
+      {renderListTextarea('workModels', 'Modelos de Trabalho Preferidos', 'Ex: PJ, Consultoria')}
 
-      <div className="space-y-2">
-        <Label htmlFor="currentMotivation">Motivação Profissional Atual</Label>
+        <div className="space-y-2">
+          <Label htmlFor="currentMotivation">Motivação Profissional Atual</Label>
           <Textarea
             id="currentMotivation"
             value={info.currentMotivation}
@@ -345,7 +330,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
             placeholder="Descreva o que te motiva profissionalmente no momento atual..."
             rows={4}
           />
-      </div>
+        </div>
     </div>
   );
 };
