@@ -56,7 +56,12 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     const currentArray = (personalInfo[field] as string[]) || [];
 
     const handleAdd = () => {
-      addToArray(field, inputValue);
+      const trimmedValue = inputValue.trim();
+      if (currentArray.includes(trimmedValue)) {
+        setInputValue('');
+        return;
+      }
+      addToArray(field, trimmedValue);
       setInputValue('');
     };
 
@@ -68,15 +73,15 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder={placeholder}
-            onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
+            onKeyDown={(e) => e.key === 'Enter' && inputValue.trim() && handleAdd()}
           />
-          <Button type="button" onClick={handleAdd} size="sm">
+          <Button type="button" onClick={() => inputValue.trim() && handleAdd()} size="sm">
             <Plus className="w-4 h-4" />
           </Button>
         </div>
         <div className="flex flex-wrap gap-2">
           {currentArray.map((item, index) => (
-            <Badge key={index} variant="secondary" className="flex items-center gap-1">
+            <Badge key={item} variant="secondary" className="flex items-center gap-1">
               {item}
               <Button
                 type="button"
