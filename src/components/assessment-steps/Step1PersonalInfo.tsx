@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -35,6 +35,7 @@ const defaultInfo: PersonalInfo = {
 const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChange }) => {
   const [info, setInfo] = useState<PersonalInfo>(data.personalInfo || defaultInfo);
   const infoRef = useRef(info);
+  const maxBirthDate = useMemo(() => new Date().toISOString().split('T')[0], []);
 
   useEffect(() => {
     infoRef.current = info;
@@ -251,16 +252,17 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="birthDate">Data de Nascimento *</Label>
-            <Input
-              id="birthDate"
-              type="date"
-              required
-              autoComplete="bday"
-              value={info.birthDate}
-              onChange={(e) => updateField('birthDate', e.target.value)}
-            />
-          </div>
+          <Label htmlFor="birthDate">Data de Nascimento *</Label>
+          <Input
+            id="birthDate"
+            type="date"
+            required
+            autoComplete="bday"
+            max={maxBirthDate}
+            value={info.birthDate}
+            onChange={(e) => updateField('birthDate', e.target.value)}
+          />
+        </div>
 
           <div className="space-y-2">
             <Label htmlFor="gender">Gênero</Label>
@@ -359,6 +361,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
               <Input
                 type="number"
                 inputMode="decimal"
+                min={0}
                 value={info.salaryExpectation.amount}
                 onChange={(e) => updateField('salaryExpectation', { ...info.salaryExpectation, amount: e.target.value })}
                 onBlur={(e) =>
