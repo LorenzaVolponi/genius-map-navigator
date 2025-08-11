@@ -95,19 +95,25 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     info.workModels,
   ]);
 
-  const handleListChange = (field: ArrayField, value: string) => {
-    setLists((prev) => ({ ...prev, [field]: value }));
-  };
+  const handleListChange = useCallback(
+    (field: ArrayField, value: string) => {
+      setLists(prev => ({ ...prev, [field]: value }));
+    },
+    [],
+  );
 
-  const handleListBlur = (field: ArrayField) => {
-    updateField(
-      field,
-      lists[field]
-        .split('\n')
-        .map((v) => v.trim())
-        .filter(Boolean) as PersonalInfo[ArrayField],
-    );
-  };
+  const handleListBlur = useCallback(
+    (field: ArrayField) => {
+      updateField(
+        field,
+        lists[field]
+          .split('\n')
+          .map(v => v.trim())
+          .filter(Boolean) as PersonalInfo[ArrayField],
+      );
+    },
+    [lists, updateField],
+  );
 
   const renderListTextarea = (
     field: ArrayField,
@@ -167,19 +173,16 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
 
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 5000);
-      const responses = await Promise.all(
-        urls.map((url) => fetch(url, { signal: controller.signal }).catch(() => null))
-      );
-      clearTimeout(timeout);
-
       let text = '';
-      for (const res of responses) {
-        if (res && res.ok) {
-          text = await res.text();
-          if (text) break;
-        }
+      try {
+        const res = await Promise.any(
+          urls.map(url => fetch(url, { signal: controller.signal })),
+        );
+        if (!res.ok) throw new Error('Dados não encontrados');
+        text = await res.text();
+      } finally {
+        clearTimeout(timeout);
       }
-
       if (!text) throw new Error('Dados não encontrados');
 
       let fullName = info.fullName;
