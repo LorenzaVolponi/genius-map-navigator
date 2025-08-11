@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -34,9 +34,17 @@ const defaultInfo: PersonalInfo = {
 
 const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChange }) => {
   const [info, setInfo] = useState<PersonalInfo>(data.personalInfo || defaultInfo);
+  const infoRef = useRef(info);
 
   useEffect(() => {
-    setInfo(data.personalInfo || defaultInfo);
+    infoRef.current = info;
+  }, [info]);
+
+  // hydrate local state when persisted data loads for the first time
+  useEffect(() => {
+    if (data.personalInfo && data.personalInfo !== infoRef.current) {
+      setInfo(data.personalInfo);
+    }
   }, [data.personalInfo]);
 
   const updateField = useCallback(<K extends keyof PersonalInfo>(field: K, value: PersonalInfo[K]) => {
@@ -44,7 +52,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
   }, []);
 
   useEffect(() => {
-    const id = setTimeout(() => onDataChange({ personalInfo: info }), 300);
+    const id = setTimeout(() => onDataChange({ personalInfo: infoRef.current }), 300);
     return () => clearTimeout(id);
   }, [info, onDataChange]);
 
@@ -56,6 +64,50 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     | 'previousRoles'
     | 'desiredRoles'
     | 'workModels';
+
+  const [lists, setLists] = useState<Record<ArrayField, string>>({
+    preferredLocations: '',
+    languages: '',
+    education: '',
+    certifications: '',
+    previousRoles: '',
+    desiredRoles: '',
+    workModels: '',
+  });
+
+  useEffect(() => {
+    setLists({
+      preferredLocations: (info.preferredLocations || []).join('\n'),
+      languages: (info.languages || []).join('\n'),
+      education: (info.education || []).join('\n'),
+      certifications: (info.certifications || []).join('\n'),
+      previousRoles: (info.previousRoles || []).join('\n'),
+      desiredRoles: (info.desiredRoles || []).join('\n'),
+      workModels: (info.workModels || []).join('\n'),
+    });
+  }, [
+    info.preferredLocations,
+    info.languages,
+    info.education,
+    info.certifications,
+    info.previousRoles,
+    info.desiredRoles,
+    info.workModels,
+  ]);
+
+  const handleListChange = (field: ArrayField, value: string) => {
+    setLists((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleListBlur = (field: ArrayField) => {
+    updateField(
+      field,
+      lists[field]
+        .split('\n')
+        .map((v) => v.trim())
+        .filter(Boolean) as PersonalInfo[ArrayField],
+    );
+  };
 
   const renderListTextarea = (
     field: ArrayField,
@@ -70,16 +122,9 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
       )}
       <Textarea
         id={field}
-        value={(info[field] || []).join('\n')}
-        onChange={(e) =>
-          updateField(
-            field,
-            e.target.value
-              .split('\n')
-              .map((v) => v.trim())
-              .filter(Boolean) as PersonalInfo[ArrayField],
-          )
-        }
+        value={lists[field]}
+        onChange={(e) => handleListChange(field, e.target.value)}
+        onBlur={() => handleListBlur(field)}
         placeholder={placeholder}
         rows={4}
       />
@@ -360,4 +405,9 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
   );
 };
 
-export default Step1PersonalInfo;
+export default React.memo(
+  Step1PersonalInfo,
+  (prev, next) =>
+    prev.data.personalInfo === next.data.personalInfo &&
+    prev.onDataChange === next.onDataChange,
+);

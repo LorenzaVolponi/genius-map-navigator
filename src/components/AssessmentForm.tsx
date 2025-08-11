@@ -56,11 +56,16 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onBack, onComplete }) =
   const progress = ((currentStep - 1) / steps.length) * 100;
   const completionPercentage = getCompletionPercentage();
 
-  const handleStepDataChange = (stepData: Partial<AssessmentData>) => {
-    const updatedData = { ...localData, ...stepData };
-    setLocalData(updatedData);
-    updateAssessmentData(stepData);
-  };
+  const handleStepDataChange = React.useCallback(
+    (stepData: Partial<AssessmentData>) => {
+      setLocalData(prev => {
+        const updated = { ...prev, ...stepData };
+        updateAssessmentData(stepData);
+        return updated;
+      });
+    },
+    [updateAssessmentData],
+  );
 
   const handleNextStep = () => {
     if (currentStep < steps.length) {
