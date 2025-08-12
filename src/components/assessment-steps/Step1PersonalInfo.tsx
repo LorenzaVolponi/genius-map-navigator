@@ -132,13 +132,17 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
 
   const handleListBlur = useCallback(
     (field: ArrayField) => {
-      updateField(
-        field,
-        lists[field]
-          .split('\n')
-          .map(v => v.trim())
-          .filter(Boolean) as PersonalInfo[ArrayField],
-      );
+      const normalized = Array.from(
+        new Set(
+          lists[field]
+            .split('\n')
+            .map(v => v.trim())
+            .filter(Boolean),
+        ),
+      ) as PersonalInfo[ArrayField];
+
+      updateField(field, normalized);
+      setLists(prev => ({ ...prev, [field]: normalized.join('\n') }));
     },
     [lists, updateField],
   );
