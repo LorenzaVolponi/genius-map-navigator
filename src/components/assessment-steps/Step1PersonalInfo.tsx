@@ -53,8 +53,35 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
   }, []);
 
   useEffect(() => {
-    const id = setTimeout(() => onDataChange({ personalInfo: infoRef.current }), 300);
-    return () => clearTimeout(id);
+    let handle: number | null = null;
+    const schedule = () => onDataChange({ personalInfo: infoRef.current });
+
+    if (typeof window !== 'undefined') {
+      const w = window as Window & {
+        requestIdleCallback?: (cb: () => void) => number;
+        cancelIdleCallback?: (id: number) => void;
+      };
+
+      if (w.requestIdleCallback) {
+        handle = w.requestIdleCallback(schedule);
+      } else {
+        handle = window.setTimeout(schedule, 300);
+      }
+
+      return () => {
+        if (handle !== null) {
+          if (w.cancelIdleCallback) {
+            w.cancelIdleCallback(handle);
+          } else {
+            clearTimeout(handle);
+          }
+        }
+      };
+    }
+
+    // non-browser environment fallback
+    const timeout = setTimeout(schedule, 300);
+    return () => clearTimeout(timeout);
   }, [info, onDataChange]);
 
   type ArrayField =
