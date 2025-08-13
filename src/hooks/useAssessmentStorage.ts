@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { AssessmentData } from '@/types/assessment';
 
 interface SavedAssessment {
@@ -70,12 +70,12 @@ export const useAssessmentStorage = () => {
     };
   }, [assessmentData]);
 
-  const updateAssessmentData = (newData: Partial<AssessmentData>) => {
+  const updateAssessmentData = useCallback((newData: Partial<AssessmentData>) => {
     setAssessmentData(prev => ({ ...prev, ...newData }));
-  };
+  }, []);
 
   // Save current step
-  const updateCurrentStep = (step: number) => {
+  const updateCurrentStep = useCallback((step: number) => {
     setCurrentStep(step);
 
     const save = () => {
@@ -97,7 +97,7 @@ export const useAssessmentStorage = () => {
         setTimeout(save, 0);
       }
     }
-  };
+  }, []);
 
   // Clear all data
   const clearAssessmentData = () => {

@@ -147,26 +147,29 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     [lists, updateField],
   );
 
-  const renderListTextarea = (
-    field: ArrayField,
-    label: string,
-    placeholder: string,
-    description?: string,
-  ) => (
-    <div className="space-y-2">
-      <Label htmlFor={field}>{label}</Label>
-      {description && (
-        <p className="text-xs text-muted-foreground">{description}</p>
-      )}
-      <Textarea
-        id={field}
-        value={lists[field]}
-        onChange={(e) => handleListChange(field, e.target.value)}
-        onBlur={() => handleListBlur(field)}
-        placeholder={placeholder}
-        rows={4}
-      />
-    </div>
+  const renderListTextarea = useCallback(
+    (
+      field: ArrayField,
+      label: string,
+      placeholder: string,
+      description?: string,
+    ) => (
+      <div className="space-y-2">
+        <Label htmlFor={field}>{label}</Label>
+        {description && (
+          <p className="text-xs text-muted-foreground">{description}</p>
+        )}
+        <Textarea
+          id={field}
+          value={lists[field]}
+          onChange={(e) => handleListChange(field, e.target.value)}
+          onBlur={() => handleListBlur(field)}
+          placeholder={placeholder}
+          rows={4}
+        />
+      </div>
+    ),
+    [lists, handleListChange, handleListBlur],
   );
 
   const [loadingLinkedIn, setLoadingLinkedIn] = useState(false);
@@ -392,6 +395,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
               <Input
                 type="number"
                 inputMode="decimal"
+                step="0.01"
                 min={0}
                 value={info.salaryExpectation.amount}
                 onChange={(e) => updateField('salaryExpectation', { ...info.salaryExpectation, amount: e.target.value })}
