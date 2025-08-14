@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { AssessmentData } from '@/types/assessment';
 
 interface SavedAssessment {
@@ -18,8 +18,9 @@ export const useAssessmentStorage = () => {
 
   // Load data from localStorage on mount
   useEffect(() => {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    const savedStep = localStorage.getItem(`${STORAGE_KEY}_step`);
+    if (typeof window === 'undefined') return;
+    const savedData = window.localStorage.getItem(STORAGE_KEY);
+    const savedStep = window.localStorage.getItem(`${STORAGE_KEY}_step`);
 
     if (savedData) {
       try {
@@ -34,13 +35,32 @@ export const useAssessmentStorage = () => {
     }
   }, []);
 
-  // Save data to localStorage with debounce to avoid UI lag
+  // Save data to localStorage with debounce and idle callback to avoid UI lag
   useEffect(() => {
     if (saveTimeout.current) {
       clearTimeout(saveTimeout.current);
     }
+
     saveTimeout.current = setTimeout(() => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(assessmentData));
+      const save = () => {
+        if (typeof window === 'undefined') return;
+        try {
+          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(assessmentData));
+        } catch (error) {
+          console.error('Error saving assessment data:', error);
+        }
+      };
+
+      if (typeof window !== 'undefined') {
+        const w = window as Window & {
+          requestIdleCallback?: (callback: () => void) => void;
+        };
+        if (w.requestIdleCallback) {
+          w.requestIdleCallback(save);
+        } else {
+          setTimeout(save, 0);
+        }
+      }
     }, 300);
 
     return () => {
@@ -50,15 +70,34 @@ export const useAssessmentStorage = () => {
     };
   }, [assessmentData]);
 
-  const updateAssessmentData = (newData: Partial<AssessmentData>) => {
+  const updateAssessmentData = useCallback((newData: Partial<AssessmentData>) => {
     setAssessmentData(prev => ({ ...prev, ...newData }));
-  };
+  }, []);
 
   // Save current step
-  const updateCurrentStep = (step: number) => {
+  const updateCurrentStep = useCallback((step: number) => {
     setCurrentStep(step);
-    localStorage.setItem(`${STORAGE_KEY}_step`, step.toString());
-  };
+
+    const save = () => {
+      if (typeof window === 'undefined') return;
+      try {
+        window.localStorage.setItem(`${STORAGE_KEY}_step`, step.toString());
+      } catch (error) {
+        console.error('Error saving current step:', error);
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      const w = window as Window & {
+        requestIdleCallback?: (callback: () => void) => void;
+      };
+      if (w.requestIdleCallback) {
+        w.requestIdleCallback(save);
+      } else {
+        setTimeout(save, 0);
+      }
+    }
+  }, []);
 
   // Clear all data
   const clearAssessmentData = () => {
@@ -67,8 +106,10 @@ export const useAssessmentStorage = () => {
     }
     setAssessmentData({});
     setCurrentStep(1);
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(`${STORAGE_KEY}_step`);
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem(STORAGE_KEY);
+      window.localStorage.removeItem(`${STORAGE_KEY}_step`);
+    }
   };
 
   // Check if data is complete
@@ -108,7 +149,8 @@ export const useAssessmentStorage = () => {
   };
 
   const getAssessmentsHistory = (): SavedAssessment[] => {
-    const history = localStorage.getItem(HISTORY_KEY);
+    if (typeof window === 'undefined') return [];
+    const history = window.localStorage.getItem(HISTORY_KEY);
     return history ? JSON.parse(history) : [];
   };
 
@@ -121,11 +163,15 @@ export const useAssessmentStorage = () => {
       date: new Date().toISOString(),
       data: assessmentData,
     });
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    }
   };
 
   const clearAssessmentsHistory = () => {
-    localStorage.removeItem(HISTORY_KEY);
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem(HISTORY_KEY);
+    }
   };
 
   const startNewAssessment = () => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -49,14 +49,23 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onBack, onComplete }) =
 
   const [localData, setLocalData] = useState<Partial<AssessmentData>>(assessmentData);
 
+  useEffect(() => {
+    setLocalData(assessmentData);
+  }, [assessmentData]);
+
   const progress = ((currentStep - 1) / steps.length) * 100;
   const completionPercentage = getCompletionPercentage();
 
-  const handleStepDataChange = (stepData: any) => {
-    const updatedData = { ...localData, ...stepData };
-    setLocalData(updatedData);
-    updateAssessmentData(stepData);
-  };
+  const handleStepDataChange = React.useCallback(
+    (stepData: Partial<AssessmentData>) => {
+      setLocalData(prev => {
+        const updated = { ...prev, ...stepData };
+        updateAssessmentData(stepData);
+        return updated;
+      });
+    },
+    [updateAssessmentData],
+  );
 
   const handleNextStep = () => {
     if (currentStep < steps.length) {
