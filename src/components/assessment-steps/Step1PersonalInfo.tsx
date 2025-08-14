@@ -13,7 +13,7 @@ interface Step1PersonalInfoProps {
   onDataChange: (data: { personalInfo: PersonalInfo }) => void;
 }
 
-const defaultInfo: PersonalInfo = {
+const createDefaultInfo = (): PersonalInfo => ({
   fullName: '',
   birthDate: '',
   gender: '',
@@ -30,7 +30,9 @@ const defaultInfo: PersonalInfo = {
   salaryExpectation: { currency: 'BRL', amount: '' },
   availability: '',
   currentMotivation: '',
-};
+});
+
+const defaultInfo = createDefaultInfo();
 
 const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChange }) => {
   const [info, setInfo] = useState<PersonalInfo>(data.personalInfo || defaultInfo);
@@ -265,6 +267,22 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     }
   };
 
+  const handleReset = useCallback(() => {
+    const empty = createDefaultInfo();
+    setInfo(empty);
+    setLists({
+      preferredLocations: '',
+      languages: '',
+      education: '',
+      certifications: '',
+      previousRoles: '',
+      desiredRoles: '',
+      workModels: '',
+    });
+    onDataChange({ personalInfo: empty });
+    toast({ title: 'Dados limpos' });
+  }, [onDataChange]);
+
   return (
     <div className="space-y-8">
       {/* Informações Básicas */}
@@ -442,6 +460,12 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
           rows={4}
         />
       </section>
+
+      <div className="flex justify-end">
+        <Button type="button" variant="secondary" onClick={handleReset}>
+          Limpar campos
+        </Button>
+      </div>
     </div>
   );
 };
