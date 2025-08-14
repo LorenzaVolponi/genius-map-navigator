@@ -9,7 +9,7 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "echo 'No tests specified' && exit 0"
+    "test": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
