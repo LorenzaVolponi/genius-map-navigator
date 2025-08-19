@@ -17,14 +17,14 @@ import {
 import { useAssessmentStorage } from '@/hooks/useAssessmentStorage';
 import { getPersonalityIntersection } from '@/lib/personalityIntersection';
 
-const BIG_LEAP_LAYERS = [
-  'Camada 1: Trabalho como diversão rentável',
-  'Camada 2: Talentos em ação',
-  'Camada 3: Propósito e paixão',
-  'Camada 4: Impacto expandido',
-  'Camada 5: Sustentabilidade e equilíbrio',
-  'Camada 6: Liberdade criativa',
-  'Camada 7: Legado transformador'
+const BIG_LEAP_LAYERS: { title: string; icon: React.ElementType }[] = [
+  { title: 'Camada 1: Trabalho como diversão rentável', icon: Lightbulb },
+  { title: 'Camada 2: Talentos em ação', icon: Target },
+  { title: 'Camada 3: Propósito e paixão', icon: BookOpen },
+  { title: 'Camada 4: Impacto expandido', icon: TrendingUp },
+  { title: 'Camada 5: Sustentabilidade e equilíbrio', icon: Shield },
+  { title: 'Camada 6: Liberdade criativa', icon: Brain },
+  { title: 'Camada 7: Legado transformador', icon: Sparkles }
 ];
 
 // Utility: check recursively if a value is filled
@@ -258,15 +258,34 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
               <CardContent>
                 <p className="text-sm mb-4">{intersection}</p>
                 <div className="flex flex-wrap gap-2">
-                  {BIG_LEAP_LAYERS.map(layer => (
-                    <Badge key={layer} variant="secondary">
-                      {layer}
+                  {BIG_LEAP_LAYERS.map(({ title }) => (
+                    <Badge key={title} variant="secondary">
+                      {title}
                     </Badge>
                   ))}
                 </div>
               </CardContent>
             </Card>
           )}
+
+          {/* Demais camadas do Big Leap */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            {BIG_LEAP_LAYERS.slice(1).map(({ title, icon: Icon }) => (
+              <Card key={title}>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Icon className="w-5 h-5 mr-2 text-primary" />
+                    {title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Detalhes sobre {title.toLowerCase()}.
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
           {selectedReportType === 'executive' && (
             <>
