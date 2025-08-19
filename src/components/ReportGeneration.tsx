@@ -237,6 +237,18 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
             <p className="text-muted-foreground">
               Análise completa baseada em IA com insights personalizados
             </p>
+            {assessmentData.personalInfo?.linkedinUrl && (
+              <p className="mt-2">
+                <a
+                  href={assessmentData.personalInfo.linkedinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary underline break-all"
+                >
+                  {assessmentData.personalInfo.linkedinUrl}
+                </a>
+              </p>
+            )}
           </div>
 
           {/* Camadas do Big Leap */}
