@@ -176,14 +176,15 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
 
   const [loadingLinkedIn, setLoadingLinkedIn] = useState(false);
 
-  const handleLinkedInImport = async () => {
-    if (!info.linkedinUrl) return;
+  const handleLinkedInImport = async (providedUrl?: string) => {
+    const linkedinUrl = providedUrl || info.linkedinUrl;
+    if (!linkedinUrl) return;
     try {
       setLoadingLinkedIn(true);
 
       let profileId = '';
       try {
-        const url = new URL(info.linkedinUrl);
+        const url = new URL(linkedinUrl);
         const parts = url.pathname.split('/').filter(Boolean);
         profileId = parts[0] || '';
       } catch {
@@ -191,7 +192,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
       }
 
       if (!profileId) {
-        const match = info.linkedinUrl.match(/linkedin\.com\/in\/([^/?]+)/i);
+        const match = linkedinUrl.match(/linkedin\.com\/in\/([^/?]+)/i);
         if (match) profileId = match[1];
       }
 
@@ -345,20 +346,19 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
 
           <div className="space-y-2 md:col-span-2">
             <Label htmlFor="linkedinUrl">LinkedIn</Label>
-            <div className="flex space-x-2">
-              <Input
-                id="linkedinUrl"
-                type="url"
-                autoComplete="url"
-                value={info.linkedinUrl}
-                onChange={(e) => updateField('linkedinUrl', e.target.value)}
-                onBlur={(e) => updateField('linkedinUrl', e.target.value.trim())}
-                placeholder="https://www.linkedin.com/in/seu-perfil"
-              />
-              <Button type="button" onClick={handleLinkedInImport} disabled={loadingLinkedIn || !info.linkedinUrl}>
-                {loadingLinkedIn ? 'Buscando...' : 'Importar'}
-              </Button>
-            </div>
+            <Input
+              id="linkedinUrl"
+              type="url"
+              autoComplete="url"
+              value={info.linkedinUrl}
+              onChange={(e) => updateField('linkedinUrl', e.target.value)}
+              onBlur={(e) => {
+                const url = e.target.value.trim();
+                updateField('linkedinUrl', url);
+                handleLinkedInImport(url);
+              }}
+              placeholder="https://www.linkedin.com/in/seu-perfil"
+            />
           </div>
         </div>
       </section>
