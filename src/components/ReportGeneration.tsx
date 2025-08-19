@@ -257,9 +257,13 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
               </CardHeader>
               <CardContent>
                 <p className="text-sm mb-4">{intersection}</p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory">
                   {BIG_LEAP_LAYERS.map(({ title }) => (
-                    <Badge key={title} variant="secondary">
+                    <Badge
+                      key={title}
+                      variant="secondary"
+                      className="whitespace-nowrap flex-shrink-0 snap-start"
+                    >
                       {title}
                     </Badge>
                   ))}
@@ -269,9 +273,9 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
           )}
 
           {/* Demais camadas do Big Leap */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <div className="flex gap-4 mb-8 overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-2 md:overflow-visible md:snap-none">
             {BIG_LEAP_LAYERS.slice(1).map(({ title, icon: Icon }) => (
-              <Card key={title}>
+              <Card key={title} className="min-w-[16rem] flex-shrink-0 snap-center md:min-w-0">
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Icon className="w-5 h-5 mr-2 text-primary" />
