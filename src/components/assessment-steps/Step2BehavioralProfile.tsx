@@ -17,6 +17,7 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
     mbti: '',
     disc: '',
     enneagram: '',
+    intelligence: '',
     otherTests: [],
     energizingSituations: [],
     drainingsituations: [],
@@ -24,7 +25,10 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
     limitingEnvironments: []
   };
 
-  const updateField = (field: keyof BehavioralProfile, value: any) => {
+  const updateField = (
+    field: keyof BehavioralProfile,
+    value: string | string[]
+  ) => {
     const updatedProfile = { ...behavioralProfile, [field]: value };
     onDataChange({ behavioralProfile: updatedProfile });
   };
@@ -88,7 +92,7 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="space-y-2">
           <Label htmlFor="mbti">MBTI *</Label>
           <Input
@@ -125,6 +129,19 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
           />
           <p className="text-xs text-muted-foreground">
             9 tipos com asas ou tríades
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="intelligence">Inteligência</Label>
+          <Input
+            id="intelligence"
+            value={behavioralProfile.intelligence}
+            onChange={(e) => updateField('intelligence', e.target.value)}
+            placeholder="Ex: Analítica, Criativa"
+          />
+          <p className="text-xs text-muted-foreground">
+            Tipo principal de inteligência predominante
           </p>
         </div>
       </div>
