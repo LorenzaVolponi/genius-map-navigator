@@ -2,6 +2,7 @@ import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import { BehavioralProfile } from '@/types/assessment';
 
 interface Step2BehavioralProfileProps {
@@ -10,13 +11,18 @@ interface Step2BehavioralProfileProps {
 }
 
 const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, onDataChange }) => {
-  const behavioralProfile = data.behavioralProfile || {
+  const behavioralProfile: BehavioralProfile = {
     traitKeywords: [],
     otherTests: [],
     energizingSituations: [],
     drainingsituations: [],
     potentiatingEnvironments: [],
     limitingEnvironments: [],
+    discType: '',
+    enneagramType: '',
+    mbtiType: '',
+    intelligenceType: '',
+    ...(data.behavioralProfile || {}),
   };
 
   const updateField = (field: keyof BehavioralProfile, value: unknown) => {
@@ -88,6 +94,45 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
 
   return (
     <div className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="discType">Tipo DISC *</Label>
+          <Input
+            id="discType"
+            value={behavioralProfile.discType}
+            onChange={(e) => updateField('discType', e.target.value)}
+            placeholder="Ex: D, I, S ou C"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="enneagramType">Tipo Eneagrama *</Label>
+          <Input
+            id="enneagramType"
+            value={behavioralProfile.enneagramType}
+            onChange={(e) => updateField('enneagramType', e.target.value)}
+            placeholder="Ex: 5w4"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="mbtiType">Tipo MBTI *</Label>
+          <Input
+            id="mbtiType"
+            value={behavioralProfile.mbtiType}
+            onChange={(e) => updateField('mbtiType', e.target.value)}
+            placeholder="Ex: INTJ"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="intelligenceType">Tipo de Inteligência *</Label>
+          <Input
+            id="intelligenceType"
+            value={behavioralProfile.intelligenceType}
+            onChange={(e) => updateField('intelligenceType', e.target.value)}
+            placeholder="Ex: Lógico-matemática"
+          />
+        </div>
+      </div>
+
       <div className="space-y-3">
         <Label className="text-base font-medium">Palavras que te descrevem *</Label>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
