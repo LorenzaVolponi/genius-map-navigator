@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AssessmentData, AnalysisResult, ReportType } from '@/types/assessment';
+import { calculateBigLeapLayers } from '@/lib/bigLeap';
 import { 
   FileText, 
   Download, 
@@ -148,6 +149,12 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
   ];
 
   if (analysisResult && selectedReportType) {
+    const bigLeapLayers = calculateBigLeapLayers(assessmentData.behavioralProfile || {
+      mbti: '',
+      disc: '',
+      enneagram: '',
+      intelligence: ''
+    });
     return (
       <div className="min-h-screen bg-gradient-subtle">
         <div className="container mx-auto px-6 py-8">
@@ -274,6 +281,23 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
               </CardContent>
             </Card>
           </div>
+
+          {/* Método Big Leap */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Camadas do Método Big Leap</CardTitle>
+              <CardDescription>Interseção de perfis para expansão</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ol className="list-decimal ml-4 space-y-2 text-sm">
+                {bigLeapLayers.map((layer, index) => (
+                  <li key={index}>
+                    <span className="font-medium">{layer.title}:</span> {layer.description}
+                  </li>
+                ))}
+              </ol>
+            </CardContent>
+          </Card>
 
           {/* Próximos Passos */}
           <Card className="mb-8">
