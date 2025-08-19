@@ -16,14 +16,42 @@ import {
 } from 'lucide-react';
 import { useAssessmentStorage } from '@/hooks/useAssessmentStorage';
 
-const BIG_LEAP_LAYERS: { title: string; icon: React.ElementType }[] = [
-  { title: 'Camada 1: Trabalho como diversão rentável', icon: Lightbulb },
-  { title: 'Camada 2: Talentos em ação', icon: Target },
-  { title: 'Camada 3: Propósito e paixão', icon: BookOpen },
-  { title: 'Camada 4: Impacto expandido', icon: TrendingUp },
-  { title: 'Camada 5: Sustentabilidade e equilíbrio', icon: Shield },
-  { title: 'Camada 6: Liberdade criativa', icon: Brain },
-  { title: 'Camada 7: Legado transformador', icon: Sparkles }
+const BIG_LEAP_LAYERS: { title: string; icon: React.ElementType; description: string }[] = [
+  {
+    title: 'Camada 1: Trabalho como diversão rentável',
+    icon: Lightbulb,
+    description: 'Transforma o que você ama fazer em fonte sustentável de renda.'
+  },
+  {
+    title: 'Camada 2: Talentos em ação',
+    icon: Target,
+    description: 'Coloca seus talentos naturais a serviço de desafios significativos.'
+  },
+  {
+    title: 'Camada 3: Propósito e paixão',
+    icon: BookOpen,
+    description: 'Alinha seu trabalho com aquilo que move seu coração.'
+  },
+  {
+    title: 'Camada 4: Impacto expandido',
+    icon: TrendingUp,
+    description: 'Amplia o alcance das suas contribuições para transformar mais vidas.'
+  },
+  {
+    title: 'Camada 5: Sustentabilidade e equilíbrio',
+    icon: Shield,
+    description: 'Mantém ritmo saudável preservando energia e bem-estar.'
+  },
+  {
+    title: 'Camada 6: Liberdade criativa',
+    icon: Brain,
+    description: 'Garante autonomia para experimentar e inovar.'
+  },
+  {
+    title: 'Camada 7: Legado transformador',
+    icon: Sparkles,
+    description: 'Deixa contribuições duradouras que inspiram outras pessoas.'
+  }
 ];
 
 // Utility: check recursively if a value is filled
@@ -102,44 +130,62 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
 
     // Análise da zona de genialidade baseada nos dados
     const geniusZone = {
-      core: finalSynthesis?.greatestGift || "Facilitação de transformações sistêmicas",
+      core: finalSynthesis?.greatestGift ?? '',
       strengths: [
-        ...(behavioralProfile?.traitKeywords?.slice(0, 3) || []),
-        ...(talentsAndFlow?.flowMoments?.slice(0, 3) || []),
-        ...(behavioralProfile?.energizingSituations?.slice(0, 2) || [])
+        ...(behavioralProfile?.traitKeywords?.slice(0, 3) ?? []),
+        ...(talentsAndFlow?.flowMoments?.slice(0, 3) ?? []),
+        ...(behavioralProfile?.energizingSituations?.slice(0, 2) ?? [])
       ].filter(Boolean),
       opportunities: [
         strategicPositioning?.areasOfInterest,
-        ...(strategicPositioning?.acceptableProjects?.slice(0, 2) || [])
+        ...(strategicPositioning?.acceptableProjects?.slice(0, 2) ?? [])
       ].filter(Boolean)
     };
 
     // Recomendações baseadas nos padrões identificados
     const recommendations = {
       immediate: [
-        `Aproveitar sua principal força: ${finalSynthesis?.greatestGift}`,
-        `Focar em ${strategicPositioning?.preferredRole || 'papel estratégico'}`,
-        `Priorizar projetos que atendam: ${finalSynthesis?.mainProfessionalNeed}`
-      ].filter(Boolean),
+        finalSynthesis?.greatestGift
+          ? `Aproveitar sua principal força: ${finalSynthesis.greatestGift}`
+          : null,
+        strategicPositioning?.preferredRole
+          ? `Focar em ${strategicPositioning.preferredRole}`
+          : null,
+        finalSynthesis?.mainProfessionalNeed
+          ? `Priorizar projetos que atendam: ${finalSynthesis.mainProfessionalNeed}`
+          : null
+      ].filter(Boolean) as string[],
       strategic: [
-        `Desenvolver ainda mais: ${talentsAndFlow?.naturalTalent}`,
-        `Evitar: ${limitsAndNonNegotiables?.willNotDoAnymore?.[0]}`,
-        `Buscar ambientes que: ${behavioralProfile?.potentiatingEnvironments?.[0]}`
-      ].filter(Boolean),
+        talentsAndFlow?.naturalTalent
+          ? `Desenvolver ainda mais: ${talentsAndFlow.naturalTalent}`
+          : null,
+        limitsAndNonNegotiables?.willNotDoAnymore?.[0]
+          ? `Evitar: ${limitsAndNonNegotiables.willNotDoAnymore[0]}`
+          : null,
+        behavioralProfile?.potentiatingEnvironments?.[0]
+          ? `Buscar ambientes que: ${behavioralProfile.potentiatingEnvironments[0]}`
+          : null
+      ].filter(Boolean) as string[],
       development: [
-        `Trabalhar padrão: ${unconsciousPatterns?.patternsToHeal?.[0]}`,
-        `Fortalecer: ${unconsciousPatterns?.spiritualPractices?.[0]}`,
-        `Desenvolver: ${talentsAndFlow?.challengesYouLove?.[0]}`
-      ].filter(Boolean)
+        unconsciousPatterns?.patternsToHeal?.[0]
+          ? `Trabalhar padrão: ${unconsciousPatterns.patternsToHeal[0]}`
+          : null,
+        unconsciousPatterns?.spiritualPractices?.[0]
+          ? `Fortalecer: ${unconsciousPatterns.spiritualPractices[0]}`
+          : null,
+        talentsAndFlow?.challengesYouLove?.[0]
+          ? `Desenvolver: ${talentsAndFlow.challengesYouLove[0]}`
+          : null
+      ].filter(Boolean) as string[]
     };
 
     // Perfil ideal baseado nas preferências
     const idealProfile = {
-      role: strategicPositioning?.preferredRole || "Estrategista de Transformação",
-      environment: behavioralProfile?.potentiatingEnvironments?.[0] || "Ambiente colaborativo e autônomo",
+      role: strategicPositioning?.preferredRole ?? '',
+      environment: behavioralProfile?.potentiatingEnvironments?.[0] ?? '',
       conditions: [
-        ...(limitsAndNonNegotiables?.minimumConditions?.slice(0, 3) || []),
-        ...(idealConditions?.workModel?.slice(0, 2) || [])
+        ...(limitsAndNonNegotiables?.minimumConditions?.slice(0, 3) ?? []),
+        ...(idealConditions?.workModel?.slice(0, 2) ?? [])
       ].filter(Boolean)
     };
 
@@ -152,12 +198,22 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
 
     // Próximos passos baseados na síntese final
     const nextSteps = [
-      `Buscar oportunidades que realizem: ${finalSynthesis?.desiredVersion}`,
-      `Aplicar seus talentos em: ${strategicPositioning?.meaningfulWork}`,
-      `Desenvolver networking em: ${strategicPositioning?.areasOfInterest}`,
-      `Implementar práticas que fortaleçam: ${unconsciousPatterns?.spiritualPractices?.[0]}`,
-      `Criar estratégia para superar: ${unconsciousPatterns?.patternsToHeal?.[0]}`
-    ].filter(Boolean);
+      finalSynthesis?.desiredVersion
+        ? `Buscar oportunidades que realizem: ${finalSynthesis.desiredVersion}`
+        : null,
+      strategicPositioning?.meaningfulWork
+        ? `Aplicar seus talentos em: ${strategicPositioning.meaningfulWork}`
+        : null,
+      strategicPositioning?.areasOfInterest
+        ? `Desenvolver networking em: ${strategicPositioning.areasOfInterest}`
+        : null,
+      unconsciousPatterns?.spiritualPractices?.[0]
+        ? `Implementar práticas que fortaleçam: ${unconsciousPatterns.spiritualPractices[0]}`
+        : null,
+      unconsciousPatterns?.patternsToHeal?.[0]
+        ? `Criar estratégia para superar: ${unconsciousPatterns.patternsToHeal[0]}`
+        : null
+    ].filter(Boolean) as string[];
 
     return {
       geniusZone,
@@ -253,7 +309,7 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
 
           {/* Camadas do Big Leap */}
           <div className="flex gap-4 mb-8 overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-2 md:overflow-visible md:snap-none">
-            {BIG_LEAP_LAYERS.map(({ title, icon: Icon }) => (
+            {BIG_LEAP_LAYERS.map(({ title, icon: Icon, description }) => (
               <Card key={title} className="min-w-[16rem] flex-shrink-0 snap-center md:min-w-0">
                 <CardHeader>
                   <CardTitle className="flex items-center">
@@ -262,9 +318,7 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Detalhes sobre {title.toLowerCase()}.
-                  </p>
+                  <p className="text-sm text-muted-foreground">{description}</p>
                 </CardContent>
               </Card>
             ))}
@@ -325,11 +379,15 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                       <h4 className="font-semibold mb-2">Papel Ideal:</h4>
-                      <Badge variant="secondary" className="text-sm">{analysisResult.idealProfile.role}</Badge>
+                      <Badge variant="secondary" className="text-sm">
+                        {analysisResult.idealProfile.role || '-'}
+                      </Badge>
                     </div>
                     <div>
                       <h4 className="font-semibold mb-2">Ambiente:</h4>
-                      <p className="text-sm">{analysisResult.idealProfile.environment}</p>
+                      <p className="text-sm">
+                        {analysisResult.idealProfile.environment || '-'}
+                      </p>
                     </div>
                     <div>
                       <h4 className="font-semibold mb-2">Condições:</h4>
