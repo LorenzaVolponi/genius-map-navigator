@@ -114,7 +114,7 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
 
       <div className="space-y-3">
         <Label className="text-base font-medium">Palavras que te descrevem *</Label>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
           {traitOptions.map(option => (
             <label key={option} className="flex items-center space-x-2 text-sm">
               <Checkbox

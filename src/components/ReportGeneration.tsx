@@ -17,6 +17,16 @@ import {
 import { useAssessmentStorage } from '@/hooks/useAssessmentStorage';
 import { getPersonalityIntersection } from '@/lib/personalityIntersection';
 
+const BIG_LEAP_LAYERS = [
+  'Camada 1: Trabalho como diversão rentável',
+  'Camada 2: Talentos em ação',
+  'Camada 3: Propósito e paixão',
+  'Camada 4: Impacto expandido',
+  'Camada 5: Sustentabilidade e equilíbrio',
+  'Camada 6: Liberdade criativa',
+  'Camada 7: Legado transformador'
+];
+
 // Utility: check recursively if a value is filled
 const hasValue = (value: unknown): boolean => {
   if (Array.isArray(value)) {
@@ -246,7 +256,14 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
                 <CardDescription>Big Leap - Camada 1: Trabalho como diversão rentável</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-sm">{intersection}</p>
+                <p className="text-sm mb-4">{intersection}</p>
+                <div className="flex flex-wrap gap-2">
+                  {BIG_LEAP_LAYERS.map(layer => (
+                    <Badge key={layer} variant="secondary">
+                      {layer}
+                    </Badge>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           )}
