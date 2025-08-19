@@ -5,6 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Brain, FileText, Target, Zap, TrendingUp, Calendar } from 'lucide-react';
 import { useAssessmentStorage } from '@/hooks/useAssessmentStorage';
+import NeuroBackground from '@/components/NeuroBackground';
 
 interface DashboardProps {
   onStartAssessment: () => void;
@@ -54,35 +55,36 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartAssessment, onViewReports 
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b">
-        <div className="container mx-auto px-6 py-10 text-center flex flex-col items-center gap-4">
-          <Brain className="w-12 h-12 text-primary" />
-          <h1 className="text-3xl font-bold">Mapa de Genialidade</h1>
-          <p className="text-muted-foreground max-w-2xl">
-            Descubra sua zona de genialidade profissional através de análise integral que combina
-            tipologias comportamentais, numerologia, astrologia e histórico de carreira
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              size="lg"
-              onClick={handleStart}
-            >
-              {hasStartedAssessment ? 'Continuar Análise' : 'Iniciar Nova Análise'}
-            </Button>
-            {(hasStartedAssessment || completedAnalyses > 0) && (
+      <div className="min-h-screen bg-background">
+        <header className="relative border-b bg-gradient-to-b from-background via-primary/5 to-background overflow-hidden">
+          <NeuroBackground />
+          <div className="relative z-10 container mx-auto px-6 py-10 text-center flex flex-col items-center gap-4">
+            <Brain className="w-12 h-12 text-primary" />
+            <h1 className="text-3xl font-bold">Mapa de Genialidade</h1>
+            <p className="text-muted-foreground max-w-2xl">
+              Descubra sua zona de genialidade profissional através de análise integral que combina
+              tipologias comportamentais, numerologia, astrologia e histórico de carreira
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
-                variant="outline"
                 size="lg"
-                onClick={onViewReports}
+                onClick={handleStart}
               >
-                <FileText className="w-5 h-5 mr-2" />
-                Ver Relatórios
+                {hasStartedAssessment ? 'Continuar Análise' : 'Iniciar Nova Análise'}
               </Button>
-            )}
+              {(hasStartedAssessment || completedAnalyses > 0) && (
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={onViewReports}
+                >
+                  <FileText className="w-5 h-5 mr-2" />
+                  Ver Relatórios
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
       {/* Stats Section */}
       <div className="container mx-auto px-6 py-12">
