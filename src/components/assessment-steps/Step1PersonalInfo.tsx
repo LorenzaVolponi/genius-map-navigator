@@ -179,8 +179,28 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
   const handleLinkedInImport = async (providedUrl?: string) => {
     const linkedinUrl = providedUrl || info.linkedinUrl;
     if (!linkedinUrl) return;
+    setLoadingLinkedIn(true);
     try {
-      setLoadingLinkedIn(true);
+      const apiKey = import.meta.env.VITE_PROXYCURL_API_KEY;
+      if (apiKey) {
+        try {
+          const res = await fetch(
+            `https://nubela.co/proxycurl/api/v2/linkedin?url=${encodeURIComponent(linkedinUrl)}&use_cache=if-present`,
+            { headers: { Authorization: `Bearer ${apiKey}` } },
+          );
+          if (res.ok) {
+            const data = await res.json();
+            if (data.full_name) updateField('fullName', data.full_name);
+            if (data.occupation) updateField('currentMotivation', data.occupation);
+            const loc = [data.city, data.country].filter(Boolean).join(', ');
+            if (loc) updateField('currentLocation', loc);
+            toast({ title: 'Dados do LinkedIn importados' });
+            return;
+          }
+        } catch (err) {
+          console.error('Proxycurl import failed', err);
+        }
+      }
 
       let profileId = '';
       try {
