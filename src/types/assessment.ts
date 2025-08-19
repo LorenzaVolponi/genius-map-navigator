@@ -27,6 +27,10 @@ export interface BehavioralProfile {
   drainingsituations: string[];
   potentiatingEnvironments: string[];
   limitingEnvironments: string[];
+  discType?: string;
+  enneagramType?: string;
+  mbtiType?: string;
+  intelligenceType?: string;
 }
 
 export interface TalentsAndFlow {

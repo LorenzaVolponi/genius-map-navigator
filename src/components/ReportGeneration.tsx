@@ -15,6 +15,7 @@ import {
   Shield
 } from 'lucide-react';
 import { useAssessmentStorage } from '@/hooks/useAssessmentStorage';
+import { getPersonalityIntersection } from '@/lib/personalityIntersection';
 
 // Utility: check recursively if a value is filled
 const hasValue = (value: unknown): boolean => {
@@ -214,6 +215,12 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
     const behavioralProfile = assessmentData.behavioralProfile;
     const symbolicMap = assessmentData.symbolicMap;
     const unconsciousPatterns = assessmentData.unconsciousPatterns;
+    const intersection = getPersonalityIntersection({
+      disc: behavioralProfile?.discType,
+      enneagram: behavioralProfile?.enneagramType,
+      mbti: behavioralProfile?.mbtiType,
+      intelligence: behavioralProfile?.intelligenceType,
+    });
 
     return (
       <div className="min-h-screen bg-gradient-subtle">
@@ -228,6 +235,21 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
               Análise completa baseada em IA com insights personalizados
             </p>
           </div>
+
+          {intersection && (
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Lightbulb className="w-6 h-6 mr-2 text-primary" />
+                  Interseção de Tipologias
+                </CardTitle>
+                <CardDescription>Big Leap - Camada 1: Trabalho como diversão rentável</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm">{intersection}</p>
+              </CardContent>
+            </Card>
+          )}
 
           {selectedReportType === 'executive' && (
             <>
