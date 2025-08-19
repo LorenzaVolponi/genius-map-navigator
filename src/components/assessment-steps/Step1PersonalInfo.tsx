@@ -176,12 +176,14 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
   );
 
   const [loadingLinkedIn, setLoadingLinkedIn] = useState(false);
+  const [linkedinError, setLinkedinError] = useState('');
   const linkedinDebounce = useRef<number>();
 
   const handleLinkedInImport = async (providedUrl?: string) => {
     const linkedinUrl = providedUrl || info.linkedinUrl;
     if (!linkedinUrl) return;
     setLoadingLinkedIn(true);
+    setLinkedinError('');
     try {
       const apiKey = import.meta.env.VITE_PROXYCURL_API_KEY;
       if (apiKey) {
@@ -219,6 +221,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
       }
 
       if (!profileId) {
+        setLinkedinError('URL inválida do LinkedIn');
         toast({ title: 'URL inválida do LinkedIn' });
         return;
       }
@@ -279,12 +282,15 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
       if (location) updateField('currentLocation', location);
 
       toast({ title: 'Dados do LinkedIn importados' });
+      setLinkedinError('');
     } catch (e) {
       console.error('Erro ao importar LinkedIn', e);
+      const msg = 'Não foi possível obter os dados do perfil informado.';
       toast({
         title: 'Erro ao importar LinkedIn',
-        description: 'Não foi possível obter os dados do perfil informado.'
+        description: msg
       });
+      setLinkedinError(msg);
     } finally {
       setLoadingLinkedIn(false);
     }
@@ -387,9 +393,13 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
               onChange={(e) => updateField('linkedinUrl', e.target.value)}
               onBlur={(e) => updateField('linkedinUrl', e.target.value.trim())}
               placeholder="https://www.linkedin.com/in/seu-perfil"
+              aria-invalid={!!linkedinError}
             />
             {loadingLinkedIn && (
               <Loader2 className="animate-spin h-4 w-4 absolute right-3 top-9 text-muted-foreground" />
+            )}
+            {linkedinError && (
+              <p className="text-sm text-destructive mt-1">{linkedinError}</p>
             )}
           </div>
         </div>

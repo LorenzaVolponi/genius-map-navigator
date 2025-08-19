@@ -4,11 +4,90 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { BehavioralProfile } from '@/types/assessment';
+import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 
 interface Step2BehavioralProfileProps {
   data: { behavioralProfile?: BehavioralProfile };
   onDataChange: (data: { behavioralProfile: BehavioralProfile }) => void;
 }
+
+const traitGroups: Record<string, string[]> = {
+    'Criatividade e Visão': [
+      'Criativo',
+      'Inovador',
+      'Visionário',
+      'Imaginativo',
+      'Criador',
+      'Curioso',
+      'Ousado',
+      'Intuitivo',
+      'Inspirador',
+    ],
+    'Análise e Estratégia': [
+      'Analítico',
+      'Estratégico',
+      'Observador',
+      'Detalhista',
+      'Pragmático',
+      'Racional',
+      'Objetivo',
+      'Perspicaz',
+      'Prático',
+      'Rigoroso',
+      'Sensato',
+      'Minucioso',
+      'Meticuloso',
+    ],
+    'Relacionamento e Comunicação': [
+      'Empático',
+      'Colaborador',
+      'Comunicativo',
+      'Diplomático',
+      'Generoso',
+      'Cuidadoso',
+      'Motivador',
+      'Sociável',
+      'Carismático',
+      'Atencioso',
+      'Honesto',
+      'Leal',
+      'Altruísta',
+      'Humilde',
+      'Responsável',
+    ],
+    'Liderança e Execução': [
+      'Resiliente',
+      'Decisivo',
+      'Proativo',
+      'Assertivo',
+      'Independente',
+      'Focado',
+      'Empreendedor',
+      'Determinado',
+      'Líder',
+      'Confiante',
+      'Disciplinado',
+      'Eficiente',
+      'Engajado',
+      'Trabalhador',
+      'Persistente',
+      'Perseverante',
+      'Ambicioso',
+    ],
+    'Estilo Pessoal': [
+      'Adaptável',
+      'Organizado',
+      'Paciente',
+      'Calmo',
+      'Versátil',
+      'Pontual',
+      'Entusiasta',
+      'Enérgico',
+      'Sereno',
+      'Otimista',
+      'Flexível',
+    ],
+  };
 
 const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, onDataChange }) => {
   const behavioralProfile: BehavioralProfile = {
@@ -26,74 +105,6 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
     onDataChange({ behavioralProfile: updatedProfile });
   };
 
-  const traitOptions = [
-    'Analítico',
-    'Criativo',
-    'Empático',
-    'Estratégico',
-    'Adaptável',
-    'Organizado',
-    'Visionário',
-    'Colaborador',
-    'Resiliente',
-    'Comunicativo',
-    'Decisivo',
-    'Detalhista',
-    'Inovador',
-    'Inspirador',
-    'Observador',
-    'Pragmático',
-    'Intuitivo',
-    'Persistente',
-    'Diplomático',
-    'Proativo',
-    'Assertivo',
-    'Generoso',
-    'Cuidadoso',
-    'Motivador',
-    'Independente',
-    'Flexível',
-    'Ambicioso',
-    'Curioso',
-    'Focado',
-    'Leal',
-    'Empreendedor',
-    'Paciente',
-    'Determinado',
-    'Carismático',
-    'Minucioso',
-    'Racional',
-    'Sociável',
-    'Calmo',
-    'Versátil',
-    'Pontual',
-    'Entusiasta',
-    'Humilde',
-    'Responsável',
-    'Altruísta',
-    'Criador',
-    'Enérgico',
-    'Meticuloso',
-    'Líder',
-    'Ousado',
-    'Sereno',
-    'Atencioso',
-    'Confiante',
-    'Disciplinado',
-    'Eficiente',
-    'Engajado',
-    'Honesto',
-    'Imaginativo',
-    'Objetivo',
-    'Otimista',
-    'Perseverante',
-    'Perspicaz',
-    'Prático',
-    'Rigoroso',
-    'Sensato',
-    'Trabalhador'
-  ];
-
   const toggleTrait = (trait: string) => {
     const current = behavioralProfile.traitKeywords;
     const updated = current.includes(trait)
@@ -103,9 +114,55 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
   };
 
   const [search, setSearch] = React.useState('');
-  const filteredTraits = traitOptions.filter(trait =>
-    trait.toLowerCase().includes(search.toLowerCase()),
-  );
+
+  const items = React.useMemo(() => {
+    const query = search.toLowerCase();
+    return Object.entries(traitGroups).flatMap(([category, traits]) => {
+      const filtered = traits.filter(trait =>
+        trait.toLowerCase().includes(query),
+      );
+      if (filtered.length === 0) return [];
+      return [
+        { type: 'header' as const, category },
+        ...filtered.map(trait => ({ type: 'trait' as const, trait })),
+      ];
+    });
+  }, [search]);
+
+  const Row = ({ index, style }: ListChildComponentProps) => {
+    const item = items[index];
+    if (item.type === 'header') {
+      return (
+        <div style={style} className="px-2 py-1 text-sm font-medium bg-muted">
+          {item.category}
+        </div>
+      );
+    }
+    const trait = item.trait;
+    return (
+      <label
+        style={style}
+        className="flex items-center space-x-2 text-sm px-2">
+        <Checkbox
+          checked={behavioralProfile.traitKeywords.includes(trait)}
+          onCheckedChange={() => toggleTrait(trait)}
+        />
+        <span>{trait}</span>
+      </label>
+    );
+  };
+
+  const [listHeight, setListHeight] = React.useState(240);
+  React.useEffect(() => {
+    const updateHeight = () => {
+      if (window.innerWidth < 640) setListHeight(200);
+      else if (window.innerWidth < 768) setListHeight(300);
+      else setListHeight(360);
+    };
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    return () => window.removeEventListener('resize', updateHeight);
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -117,17 +174,14 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
           placeholder="Buscar traço"
           className="mb-2"
         />
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-          {filteredTraits.map(option => (
-            <label key={option} className="flex items-center space-x-2 text-sm">
-              <Checkbox
-                checked={behavioralProfile.traitKeywords.includes(option)}
-                onCheckedChange={() => toggleTrait(option)}
-              />
-              <span>{option}</span>
-            </label>
-          ))}
-        </div>
+        <List
+          height={listHeight}
+          itemCount={items.length}
+          itemSize={32}
+          width="100%"
+        >
+          {Row}
+        </List>
       </div>
 
       <div className="space-y-3">
