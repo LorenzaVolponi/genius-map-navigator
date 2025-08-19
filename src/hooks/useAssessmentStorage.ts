@@ -119,11 +119,7 @@ export const useAssessmentStorage = () => {
         return !!(assessmentData.personalInfo?.fullName && assessmentData.personalInfo?.birthDate);
       case 2:
         return !!(
-          assessmentData.behavioralProfile?.traitKeywords?.length &&
-          assessmentData.behavioralProfile?.discType &&
-          assessmentData.behavioralProfile?.enneagramType &&
-          assessmentData.behavioralProfile?.mbtiType &&
-          assessmentData.behavioralProfile?.intelligenceType
+          assessmentData.behavioralProfile?.traitKeywords?.length
         );
       case 3:
         return !!(assessmentData.talentsAndFlow?.flowMoments?.length);

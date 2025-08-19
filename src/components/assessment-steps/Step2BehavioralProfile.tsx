@@ -3,9 +3,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
 import { BehavioralProfile } from '@/types/assessment';
-import { getPersonalityIntersection } from '@/lib/personalityIntersection';
 
 interface Step2BehavioralProfileProps {
   data: { behavioralProfile?: BehavioralProfile };
@@ -20,10 +18,6 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
     drainingsituations: [],
     potentiatingEnvironments: [],
     limitingEnvironments: [],
-    discType: '',
-    enneagramType: '',
-    mbtiType: '',
-    intelligenceType: '',
     ...(data.behavioralProfile || {}),
   };
 
@@ -82,7 +76,22 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
     'Meticuloso',
     'Líder',
     'Ousado',
-    'Sereno'
+    'Sereno',
+    'Atencioso',
+    'Confiante',
+    'Disciplinado',
+    'Eficiente',
+    'Engajado',
+    'Honesto',
+    'Imaginativo',
+    'Objetivo',
+    'Otimista',
+    'Perseverante',
+    'Perspicaz',
+    'Prático',
+    'Rigoroso',
+    'Sensato',
+    'Trabalhador'
   ];
 
   const toggleTrait = (trait: string) => {
@@ -98,60 +107,8 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
     trait.toLowerCase().includes(search.toLowerCase()),
   );
 
-  const intersection = getPersonalityIntersection({
-    disc: behavioralProfile.discType,
-    enneagram: behavioralProfile.enneagramType,
-    mbti: behavioralProfile.mbtiType,
-    intelligence: behavioralProfile.intelligenceType,
-  });
-
-
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="discType">Tipo DISC *</Label>
-          <Input
-            id="discType"
-            value={behavioralProfile.discType}
-            onChange={(e) => updateField('discType', e.target.value)}
-            placeholder="Ex: D, I, S ou C"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="enneagramType">Tipo Eneagrama *</Label>
-          <Input
-            id="enneagramType"
-            value={behavioralProfile.enneagramType}
-            onChange={(e) => updateField('enneagramType', e.target.value)}
-            placeholder="Ex: 5w4"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="mbtiType">Tipo MBTI *</Label>
-          <Input
-            id="mbtiType"
-            value={behavioralProfile.mbtiType}
-            onChange={(e) => updateField('mbtiType', e.target.value)}
-            placeholder="Ex: INTJ"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="intelligenceType">Tipo de Inteligência *</Label>
-          <Input
-            id="intelligenceType"
-            value={behavioralProfile.intelligenceType}
-            onChange={(e) => updateField('intelligenceType', e.target.value)}
-            placeholder="Ex: Lógico-matemática"
-          />
-        </div>
-      </div>
-      {intersection && (
-        <Card className="bg-primary/5">
-          <CardContent className="p-3 text-sm text-center">{intersection}</CardContent>
-        </Card>
-      )}
-
       <div className="space-y-3">
         <Label className="text-base font-medium">Palavras que te descrevem *</Label>
         <Input

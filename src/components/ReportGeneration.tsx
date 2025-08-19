@@ -15,7 +15,6 @@ import {
   Shield
 } from 'lucide-react';
 import { useAssessmentStorage } from '@/hooks/useAssessmentStorage';
-import { getPersonalityIntersection } from '@/lib/personalityIntersection';
 
 const BIG_LEAP_LAYERS: { title: string; icon: React.ElementType }[] = [
   { title: 'Camada 1: Trabalho como diversão rentável', icon: Lightbulb },
@@ -225,12 +224,6 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
     const behavioralProfile = assessmentData.behavioralProfile;
     const symbolicMap = assessmentData.symbolicMap;
     const unconsciousPatterns = assessmentData.unconsciousPatterns;
-    const intersection = getPersonalityIntersection({
-      disc: behavioralProfile?.discType,
-      enneagram: behavioralProfile?.enneagramType,
-      mbti: behavioralProfile?.mbtiType,
-      intelligence: behavioralProfile?.intelligenceType,
-    });
 
     return (
       <div className="min-h-screen bg-gradient-subtle">
@@ -246,35 +239,9 @@ const ReportGeneration: React.FC<ReportGenerationProps> = ({ assessmentData, onB
             </p>
           </div>
 
-          {intersection && (
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Lightbulb className="w-6 h-6 mr-2 text-primary" />
-                  Interseção de Tipologias
-                </CardTitle>
-                <CardDescription>Big Leap - Camada 1: Trabalho como diversão rentável</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm mb-4">{intersection}</p>
-                <div className="flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory">
-                  {BIG_LEAP_LAYERS.map(({ title }) => (
-                    <Badge
-                      key={title}
-                      variant="secondary"
-                      className="whitespace-nowrap flex-shrink-0 snap-start"
-                    >
-                      {title}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Demais camadas do Big Leap */}
+          {/* Camadas do Big Leap */}
           <div className="flex gap-4 mb-8 overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-2 md:overflow-visible md:snap-none">
-            {BIG_LEAP_LAYERS.slice(1).map(({ title, icon: Icon }) => (
+            {BIG_LEAP_LAYERS.map(({ title, icon: Icon }) => (
               <Card key={title} className="min-w-[16rem] flex-shrink-0 snap-center md:min-w-0">
                 <CardHeader>
                   <CardTitle className="flex items-center">

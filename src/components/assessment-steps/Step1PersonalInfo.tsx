@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/components/ui/use-toast';
 import { PersonalInfo } from '@/types/assessment';
+import { Loader2 } from 'lucide-react';
 
 interface Step1PersonalInfoProps {
   data: { personalInfo?: PersonalInfo };
@@ -175,6 +176,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
   );
 
   const [loadingLinkedIn, setLoadingLinkedIn] = useState(false);
+  const linkedinDebounce = useRef<number>();
 
   const handleLinkedInImport = async (providedUrl?: string) => {
     const linkedinUrl = providedUrl || info.linkedinUrl;
@@ -288,6 +290,17 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
     }
   };
 
+  useEffect(() => {
+    if (!info.linkedinUrl) return;
+    if (linkedinDebounce.current) clearTimeout(linkedinDebounce.current);
+    linkedinDebounce.current = window.setTimeout(() => {
+      handleLinkedInImport(info.linkedinUrl);
+    }, 800);
+    return () => {
+      if (linkedinDebounce.current) clearTimeout(linkedinDebounce.current);
+    };
+  }, [info.linkedinUrl]);
+
   const handleReset = useCallback(() => {
     const empty = createDefaultInfo();
     setInfo(empty);
@@ -364,7 +377,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
             />
           </div>
 
-          <div className="space-y-2 md:col-span-2">
+          <div className="space-y-2 md:col-span-2 relative">
             <Label htmlFor="linkedinUrl">LinkedIn</Label>
             <Input
               id="linkedinUrl"
@@ -372,13 +385,12 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
               autoComplete="url"
               value={info.linkedinUrl}
               onChange={(e) => updateField('linkedinUrl', e.target.value)}
-              onBlur={(e) => {
-                const url = e.target.value.trim();
-                updateField('linkedinUrl', url);
-                handleLinkedInImport(url);
-              }}
+              onBlur={(e) => updateField('linkedinUrl', e.target.value.trim())}
               placeholder="https://www.linkedin.com/in/seu-perfil"
             />
+            {loadingLinkedIn && (
+              <Loader2 className="animate-spin h-4 w-4 absolute right-3 top-9 text-muted-foreground" />
+            )}
           </div>
         </div>
       </section>
