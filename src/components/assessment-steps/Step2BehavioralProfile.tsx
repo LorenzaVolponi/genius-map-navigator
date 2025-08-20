@@ -3,8 +3,11 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { BehavioralProfile } from '@/types/assessment';
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
+import { getPersonalityIntersection } from '@/lib/personalityIntersection';
 
 interface Step2BehavioralProfileProps {
   data: { behavioralProfile?: BehavioralProfile };
@@ -74,7 +77,7 @@ const traitGroups: Record<string, string[]> = {
       'Perseverante',
       'Ambicioso',
     ],
-    'Estilo Pessoal': [
+  'Estilo Pessoal': [
       'Adaptável',
       'Organizado',
       'Paciente',
@@ -88,6 +91,16 @@ const traitGroups: Record<string, string[]> = {
       'Flexível',
     ],
   };
+
+const BIG_LEAP_LAYERS = [
+  'Camada 1: Trabalho como diversão rentável',
+  'Camada 2: Talentos em ação',
+  'Camada 3: Propósito e paixão',
+  'Camada 4: Impacto expandido',
+  'Camada 5: Sustentabilidade e equilíbrio',
+  'Camada 6: Liberdade criativa',
+  'Camada 7: Legado transformador',
+];
 
 const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, onDataChange }) => {
   const behavioralProfile: BehavioralProfile = {
@@ -118,6 +131,22 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
   };
 
   const [search, setSearch] = React.useState('');
+
+  const intersection = React.useMemo(
+    () =>
+      getPersonalityIntersection({
+        discType: behavioralProfile.discType,
+        enneagramType: behavioralProfile.enneagramType,
+        mbtiType: behavioralProfile.mbtiType,
+        intelligenceType: behavioralProfile.intelligenceType,
+      }),
+    [
+      behavioralProfile.discType,
+      behavioralProfile.enneagramType,
+      behavioralProfile.mbtiType,
+      behavioralProfile.intelligenceType,
+    ],
+  );
 
   const items = React.useMemo(() => {
     const query = search.toLowerCase();
@@ -208,6 +237,28 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
           />
         </div>
       </div>
+
+      <Card className="bg-muted/50">
+        <CardHeader>
+          <CardTitle>Interseção de Personalidade</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">{intersection.summary}</p>
+          <div className="overflow-x-auto mt-4">
+            <div className="flex space-x-2 snap-x snap-mandatory w-max">
+              {BIG_LEAP_LAYERS.map((layer, idx) => (
+                <Badge
+                  key={layer}
+                  variant={idx === 0 ? 'default' : 'outline'}
+                  className="snap-center whitespace-nowrap"
+                >
+                  {layer}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="space-y-3">
         <Label className="text-base font-medium">Palavras que te descrevem *</Label>
