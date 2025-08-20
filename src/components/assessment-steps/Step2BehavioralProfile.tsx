@@ -91,6 +91,10 @@ const traitGroups: Record<string, string[]> = {
 
 const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, onDataChange }) => {
   const behavioralProfile: BehavioralProfile = {
+    discType: '',
+    enneagramType: '',
+    mbtiType: '',
+    intelligenceType: '',
     traitKeywords: [],
     otherTests: [],
     energizingSituations: [],
@@ -166,6 +170,45 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
 
   return (
     <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
+        <div className="space-y-2">
+          <Label htmlFor="discType" className="text-base font-medium">Tipo DISC *</Label>
+          <Input
+            id="discType"
+            value={behavioralProfile.discType}
+            onChange={(e) => updateField('discType', e.target.value)}
+            placeholder="Ex: D"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="enneagramType" className="text-base font-medium">Tipo Eneagrama *</Label>
+          <Input
+            id="enneagramType"
+            value={behavioralProfile.enneagramType}
+            onChange={(e) => updateField('enneagramType', e.target.value)}
+            placeholder="Ex: 5w4"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="mbtiType" className="text-base font-medium">Tipo MBTI *</Label>
+          <Input
+            id="mbtiType"
+            value={behavioralProfile.mbtiType}
+            onChange={(e) => updateField('mbtiType', e.target.value)}
+            placeholder="Ex: INTJ"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="intelligenceType" className="text-base font-medium">Tipo de Inteligência *</Label>
+          <Input
+            id="intelligenceType"
+            value={behavioralProfile.intelligenceType}
+            onChange={(e) => updateField('intelligenceType', e.target.value)}
+            placeholder="Ex: Lógico-Matemática"
+          />
+        </div>
+      </div>
+
       <div className="space-y-3">
         <Label className="text-base font-medium">Palavras que te descrevem *</Label>
         <Input
