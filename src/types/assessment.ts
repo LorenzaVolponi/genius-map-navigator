@@ -21,10 +21,14 @@ export interface PersonalInfo {
 }
 
 export interface BehavioralProfile {
+  discType: string;
+  enneagramType: string;
+  mbtiType: string;
+  intelligenceType: string;
   traitKeywords: string[];
   otherTests: string[];
   energizingSituations: string[];
-  drainingsituations: string[];
+  drainingSituations: string[];
   potentiatingEnvironments: string[];
   limitingEnvironments: string[];
 }

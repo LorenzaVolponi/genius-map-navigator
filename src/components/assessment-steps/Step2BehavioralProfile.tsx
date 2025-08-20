@@ -2,60 +2,125 @@ import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { BehavioralProfile } from '@/types/assessment';
+import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
+import { getPersonalityIntersection } from '@/lib/personalityIntersection';
 
 interface Step2BehavioralProfileProps {
   data: { behavioralProfile?: BehavioralProfile };
   onDataChange: (data: { behavioralProfile: BehavioralProfile }) => void;
 }
 
+const traitGroups: Record<string, string[]> = {
+    'Criatividade e Visão': [
+      'Criativo',
+      'Inovador',
+      'Visionário',
+      'Imaginativo',
+      'Criador',
+      'Curioso',
+      'Ousado',
+      'Intuitivo',
+      'Inspirador',
+    ],
+    'Análise e Estratégia': [
+      'Analítico',
+      'Estratégico',
+      'Observador',
+      'Detalhista',
+      'Pragmático',
+      'Racional',
+      'Objetivo',
+      'Perspicaz',
+      'Prático',
+      'Rigoroso',
+      'Sensato',
+      'Minucioso',
+      'Meticuloso',
+    ],
+    'Relacionamento e Comunicação': [
+      'Empático',
+      'Colaborador',
+      'Comunicativo',
+      'Diplomático',
+      'Generoso',
+      'Cuidadoso',
+      'Motivador',
+      'Sociável',
+      'Carismático',
+      'Atencioso',
+      'Honesto',
+      'Leal',
+      'Altruísta',
+      'Humilde',
+      'Responsável',
+    ],
+    'Liderança e Execução': [
+      'Resiliente',
+      'Decisivo',
+      'Proativo',
+      'Assertivo',
+      'Independente',
+      'Focado',
+      'Empreendedor',
+      'Determinado',
+      'Líder',
+      'Confiante',
+      'Disciplinado',
+      'Eficiente',
+      'Engajado',
+      'Trabalhador',
+      'Persistente',
+      'Perseverante',
+      'Ambicioso',
+    ],
+  'Estilo Pessoal': [
+      'Adaptável',
+      'Organizado',
+      'Paciente',
+      'Calmo',
+      'Versátil',
+      'Pontual',
+      'Entusiasta',
+      'Enérgico',
+      'Sereno',
+      'Otimista',
+      'Flexível',
+    ],
+  };
+
+const BIG_LEAP_LAYERS = [
+  'Camada 1: Trabalho como diversão rentável',
+  'Camada 2: Talentos em ação',
+  'Camada 3: Propósito e paixão',
+  'Camada 4: Impacto expandido',
+  'Camada 5: Sustentabilidade e equilíbrio',
+  'Camada 6: Liberdade criativa',
+  'Camada 7: Legado transformador',
+];
+
 const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, onDataChange }) => {
-  const behavioralProfile = data.behavioralProfile || {
+  const behavioralProfile: BehavioralProfile = {
+    discType: '',
+    enneagramType: '',
+    mbtiType: '',
+    intelligenceType: '',
     traitKeywords: [],
     otherTests: [],
     energizingSituations: [],
-    drainingsituations: [],
+    drainingSituations: [],
     potentiatingEnvironments: [],
-    limitingEnvironments: []
+    limitingEnvironments: [],
+    ...(data.behavioralProfile || {}),
   };
 
   const updateField = (field: keyof BehavioralProfile, value: unknown) => {
     const updatedProfile = { ...behavioralProfile, [field]: value };
     onDataChange({ behavioralProfile: updatedProfile });
   };
-
-  const traitOptions = [
-    'Analítico',
-    'Criativo',
-    'Empático',
-    'Estratégico',
-    'Adaptável',
-    'Organizado',
-    'Visionário',
-    'Colaborador',
-    'Resiliente',
-    'Comunicativo',
-    'Decisivo',
-    'Detalhista',
-    'Inovador',
-    'Inspirador',
-    'Observador',
-    'Pragmático',
-    'Intuitivo',
-    'Persistente',
-    'Diplomático',
-    'Proativo',
-    'Assertivo',
-    'Generoso',
-    'Cuidadoso',
-    'Motivador',
-    'Independente',
-    'Flexível',
-    'Ambicioso',
-    'Curioso',
-    'Focado',
-    'Leal'
-  ];
 
   const toggleTrait = (trait: string) => {
     const current = behavioralProfile.traitKeywords;
@@ -65,22 +130,152 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
     updateField('traitKeywords', updated);
   };
 
+  const [search, setSearch] = React.useState('');
+
+  const intersection = React.useMemo(
+    () =>
+      getPersonalityIntersection({
+        discType: behavioralProfile.discType,
+        enneagramType: behavioralProfile.enneagramType,
+        mbtiType: behavioralProfile.mbtiType,
+        intelligenceType: behavioralProfile.intelligenceType,
+      }),
+    [
+      behavioralProfile.discType,
+      behavioralProfile.enneagramType,
+      behavioralProfile.mbtiType,
+      behavioralProfile.intelligenceType,
+    ],
+  );
+
+  const items = React.useMemo(() => {
+    const query = search.toLowerCase();
+    return Object.entries(traitGroups).flatMap(([category, traits]) => {
+      const filtered = traits.filter(trait =>
+        trait.toLowerCase().includes(query),
+      );
+      if (filtered.length === 0) return [];
+      return [
+        { type: 'header' as const, category },
+        ...filtered.map(trait => ({ type: 'trait' as const, trait })),
+      ];
+    });
+  }, [search]);
+
+  const Row = ({ index, style }: ListChildComponentProps) => {
+    const item = items[index];
+    if (item.type === 'header') {
+      return (
+        <div style={style} className="px-2 py-1 text-sm font-medium bg-muted">
+          {item.category}
+        </div>
+      );
+    }
+    const trait = item.trait;
+    return (
+      <label
+        style={style}
+        className="flex items-center space-x-2 text-sm px-2">
+        <Checkbox
+          checked={behavioralProfile.traitKeywords.includes(trait)}
+          onCheckedChange={() => toggleTrait(trait)}
+        />
+        <span>{trait}</span>
+      </label>
+    );
+  };
+
+  const [listHeight, setListHeight] = React.useState(240);
+  React.useEffect(() => {
+    const updateHeight = () => {
+      if (window.innerWidth < 640) setListHeight(200);
+      else if (window.innerWidth < 768) setListHeight(300);
+      else setListHeight(360);
+    };
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    return () => window.removeEventListener('resize', updateHeight);
+  }, []);
 
   return (
     <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
+        <div className="space-y-2">
+          <Label htmlFor="discType" className="text-base font-medium">Tipo DISC *</Label>
+          <Input
+            id="discType"
+            value={behavioralProfile.discType}
+            onChange={(e) => updateField('discType', e.target.value)}
+            placeholder="Ex: D"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="enneagramType" className="text-base font-medium">Tipo Eneagrama *</Label>
+          <Input
+            id="enneagramType"
+            value={behavioralProfile.enneagramType}
+            onChange={(e) => updateField('enneagramType', e.target.value)}
+            placeholder="Ex: 5w4"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="mbtiType" className="text-base font-medium">Tipo MBTI *</Label>
+          <Input
+            id="mbtiType"
+            value={behavioralProfile.mbtiType}
+            onChange={(e) => updateField('mbtiType', e.target.value)}
+            placeholder="Ex: INTJ"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="intelligenceType" className="text-base font-medium">Tipo de Inteligência *</Label>
+          <Input
+            id="intelligenceType"
+            value={behavioralProfile.intelligenceType}
+            onChange={(e) => updateField('intelligenceType', e.target.value)}
+            placeholder="Ex: Lógico-Matemática"
+          />
+        </div>
+      </div>
+
+      <Card className="bg-muted/50">
+        <CardHeader>
+          <CardTitle>Interseção de Personalidade</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">{intersection.summary}</p>
+          <div className="overflow-x-auto mt-4">
+            <div className="flex space-x-2 snap-x snap-mandatory w-max">
+              {BIG_LEAP_LAYERS.map((layer, idx) => (
+                <Badge
+                  key={layer}
+                  variant={idx === 0 ? 'default' : 'outline'}
+                  className="snap-center whitespace-nowrap"
+                >
+                  {layer}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="space-y-3">
         <Label className="text-base font-medium">Palavras que te descrevem *</Label>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-          {traitOptions.map(option => (
-            <label key={option} className="flex items-center space-x-2 text-sm">
-              <Checkbox
-                checked={behavioralProfile.traitKeywords.includes(option)}
-                onCheckedChange={() => toggleTrait(option)}
-              />
-              <span>{option}</span>
-            </label>
-          ))}
-        </div>
+        <Input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Buscar traço"
+          className="mb-2"
+        />
+        <List
+          height={listHeight}
+          itemCount={items.length}
+          itemSize={32}
+          width="100%"
+        >
+          {Row}
+        </List>
       </div>
 
       <div className="space-y-3">
@@ -126,8 +321,8 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
               <Label className="text-base font-medium">Situações que Drenam Energia</Label>
             </div>
             <Textarea
-              value={behavioralProfile.drainingsituations.join('\n')}
-              onChange={(e) => updateField('drainingsituations', e.target.value.split('\n').filter(s => s.trim()))}
+              value={behavioralProfile.drainingSituations.join('\n')}
+              onChange={(e) => updateField('drainingSituations', e.target.value.split('\n').filter(s => s.trim()))}
               placeholder="Descreva as situações que te drenam e desmotivam. Ex: Reuniões longas sem propósito, microgerenciamento excessivo, ambientes competitivos destrutivos..."
               rows={4}
             />

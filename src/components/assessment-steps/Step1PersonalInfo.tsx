@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/components/ui/use-toast';
 import { PersonalInfo } from '@/types/assessment';
+import { Loader2 } from 'lucide-react';
 
 interface Step1PersonalInfoProps {
   data: { personalInfo?: PersonalInfo };
@@ -175,15 +176,39 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
   );
 
   const [loadingLinkedIn, setLoadingLinkedIn] = useState(false);
+  const [linkedinError, setLinkedinError] = useState('');
+  const linkedinDebounce = useRef<number>();
 
-  const handleLinkedInImport = async () => {
-    if (!info.linkedinUrl) return;
+  const handleLinkedInImport = async (providedUrl?: string) => {
+    const linkedinUrl = providedUrl || info.linkedinUrl;
+    if (!linkedinUrl) return;
+    setLoadingLinkedIn(true);
+    setLinkedinError('');
     try {
-      setLoadingLinkedIn(true);
+      const apiKey = import.meta.env.VITE_PROXYCURL_API_KEY;
+      if (apiKey) {
+        try {
+          const res = await fetch(
+            `https://nubela.co/proxycurl/api/v2/linkedin?url=${encodeURIComponent(linkedinUrl)}&use_cache=if-present`,
+            { headers: { Authorization: `Bearer ${apiKey}` } },
+          );
+          if (res.ok) {
+            const data = await res.json();
+            if (data.full_name) updateField('fullName', data.full_name);
+            if (data.occupation) updateField('currentMotivation', data.occupation);
+            const loc = [data.city, data.country].filter(Boolean).join(', ');
+            if (loc) updateField('currentLocation', loc);
+            toast({ title: 'Dados do LinkedIn importados' });
+            return;
+          }
+        } catch (err) {
+          console.error('Proxycurl import failed', err);
+        }
+      }
 
       let profileId = '';
       try {
-        const url = new URL(info.linkedinUrl);
+        const url = new URL(linkedinUrl);
         const parts = url.pathname.split('/').filter(Boolean);
         profileId = parts[0] || '';
       } catch {
@@ -191,11 +216,12 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
       }
 
       if (!profileId) {
-        const match = info.linkedinUrl.match(/linkedin\.com\/in\/([^/?]+)/i);
+        const match = linkedinUrl.match(/linkedin\.com\/in\/([^/?]+)/i);
         if (match) profileId = match[1];
       }
 
       if (!profileId) {
+        setLinkedinError('URL inválida do LinkedIn');
         toast({ title: 'URL inválida do LinkedIn' });
         return;
       }
@@ -256,16 +282,30 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
       if (location) updateField('currentLocation', location);
 
       toast({ title: 'Dados do LinkedIn importados' });
+      setLinkedinError('');
     } catch (e) {
       console.error('Erro ao importar LinkedIn', e);
+      const msg = 'Não foi possível obter os dados do perfil informado.';
       toast({
         title: 'Erro ao importar LinkedIn',
-        description: 'Não foi possível obter os dados do perfil informado.'
+        description: msg
       });
+      setLinkedinError(msg);
     } finally {
       setLoadingLinkedIn(false);
     }
   };
+
+  useEffect(() => {
+    if (!info.linkedinUrl) return;
+    if (linkedinDebounce.current) clearTimeout(linkedinDebounce.current);
+    linkedinDebounce.current = window.setTimeout(() => {
+      handleLinkedInImport(info.linkedinUrl);
+    }, 800);
+    return () => {
+      if (linkedinDebounce.current) clearTimeout(linkedinDebounce.current);
+    };
+  }, [info.linkedinUrl]);
 
   const handleReset = useCallback(() => {
     const empty = createDefaultInfo();
@@ -343,22 +383,24 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({ data, onDataChang
             />
           </div>
 
-          <div className="space-y-2 md:col-span-2">
+          <div className="space-y-2 md:col-span-2 relative">
             <Label htmlFor="linkedinUrl">LinkedIn</Label>
-            <div className="flex space-x-2">
-              <Input
-                id="linkedinUrl"
-                type="url"
-                autoComplete="url"
-                value={info.linkedinUrl}
-                onChange={(e) => updateField('linkedinUrl', e.target.value)}
-                onBlur={(e) => updateField('linkedinUrl', e.target.value.trim())}
-                placeholder="https://www.linkedin.com/in/seu-perfil"
-              />
-              <Button type="button" onClick={handleLinkedInImport} disabled={loadingLinkedIn || !info.linkedinUrl}>
-                {loadingLinkedIn ? 'Buscando...' : 'Importar'}
-              </Button>
-            </div>
+            <Input
+              id="linkedinUrl"
+              type="url"
+              autoComplete="url"
+              value={info.linkedinUrl}
+              onChange={(e) => updateField('linkedinUrl', e.target.value)}
+              onBlur={(e) => updateField('linkedinUrl', e.target.value.trim())}
+              placeholder="https://www.linkedin.com/in/seu-perfil"
+              aria-invalid={!!linkedinError}
+            />
+            {loadingLinkedIn && (
+              <Loader2 className="animate-spin h-4 w-4 absolute right-3 top-9 text-muted-foreground" />
+            )}
+            {linkedinError && (
+              <p className="text-sm text-destructive mt-1">{linkedinError}</p>
+            )}
           </div>
         </div>
       </section>
