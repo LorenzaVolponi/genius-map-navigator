@@ -98,7 +98,7 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
     traitKeywords: [],
     otherTests: [],
     energizingSituations: [],
-    drainingsituations: [],
+    drainingSituations: [],
     potentiatingEnvironments: [],
     limitingEnvironments: [],
     ...(data.behavioralProfile || {}),
@@ -270,8 +270,8 @@ const Step2BehavioralProfile: React.FC<Step2BehavioralProfileProps> = ({ data, o
               <Label className="text-base font-medium">Situações que Drenam Energia</Label>
             </div>
             <Textarea
-              value={behavioralProfile.drainingsituations.join('\n')}
-              onChange={(e) => updateField('drainingsituations', e.target.value.split('\n').filter(s => s.trim()))}
+              value={behavioralProfile.drainingSituations.join('\n')}
+              onChange={(e) => updateField('drainingSituations', e.target.value.split('\n').filter(s => s.trim()))}
               placeholder="Descreva as situações que te drenam e desmotivam. Ex: Reuniões longas sem propósito, microgerenciamento excessivo, ambientes competitivos destrutivos..."
               rows={4}
             />
